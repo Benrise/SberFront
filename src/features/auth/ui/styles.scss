@@ -1,0 +1,23 @@
+.auth-form {
+    background-color: white;
+    padding: 64px;
+    border-radius: 12px;
+
+    width: 464px;
+
+    &__form {
+        display: flex;
+        flex-direction: column;
+        gap: 36px;
+        align-items: center;
+    }
+
+    &__separators {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        color: hsl(var(--muted-foreground));
+        width: 100%;
+    }
+}

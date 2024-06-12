@@ -1,7 +1,9 @@
+import { AuthForm } from "@/features/auth"
+
 export const AuthPage = () => {
     return (
         <div>
-            <h1>AuthPage</h1>
+            <AuthForm/>
         </div>
     )
 }
