@@ -1,0 +1,25 @@
+.header {
+    background-color: white;
+
+    &__container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 24px 0;
+    }
+
+    &__right,
+    &__left {
+        display: flex;
+        flex-direction: row;
+        gap: 24px;
+        align-items: center;
+    }
+}
+
+.menu {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+}

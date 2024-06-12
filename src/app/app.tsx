@@ -1,16 +1,26 @@
 import { FunctionComponent } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 
-import { HomePage } from '@/pages/HomePage'
 import { AuthPage } from '@/pages/AuthPage'
+import { HomePage } from '@/pages/HomePage'
+import { PreprocessingPage } from '@/pages/PreprocessingPage'
+import { DistributionPage } from '@/pages/DistributionPage'
+
+import { DefaultLayout, AuthLayout } from '@/app/layout'
 
 
 export const App: FunctionComponent = () => (
-  <div>
+  <>
     <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/auth" element={<AuthPage />} />
-      <Route path="*" element={<HomePage />} />
+      <Route path="/" element={<DefaultLayout />}>
+        <Route index element={<HomePage />} />
+        <Route path="preprocessing" element={<PreprocessingPage />} />
+        <Route path="distribution" element={<DistributionPage />} />
+        <Route path="*" element={<HomePage />} />
+      </Route>
+      <Route path="auth" element={<AuthLayout />}>
+        <Route index element={<AuthPage />} />
+      </Route>
     </Routes>
-  </div>
+  </>
 )

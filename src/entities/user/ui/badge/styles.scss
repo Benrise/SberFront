@@ -1,0 +1,10 @@
+.user-badge {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    &__name {
+        display: flex;
+        align-items: center;
+        @include body();
+    }
+}

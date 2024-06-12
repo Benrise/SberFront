@@ -1,0 +1,100 @@
+@function rem($px, $current: 16) {
+	$remValue:  calc($px / $current) + rem;
+	@return $remValue;
+}
+
+@function em($px, $current: 16) {
+	$result:  calc($px / $current) + em;
+	@return $result;
+}
+
+@mixin subtitle(
+	$font-weight: 500,
+	$font-size: 22,
+	$font-size-mobile: 16,
+	$line-height: 29,
+) {
+	font-weight: $font-weight;
+	@include adaptiveValue("font-size", $font-size, $font-size-mobile);
+	@include adaptiveValue("line-height", $line-height, 19);
+	color: hsl(var(--foreground));
+}
+
+@mixin title {
+	font-weight: 500;
+	color: var(--foreground);
+	@include adaptiveValue("font-size", 32, 24, 700, 280, 1);
+	@include adaptiveValue("line-height", 39, 29, 700, 280, 1);
+}
+
+@mixin body(
+		$font-size: 16,
+		$font-size-mobile: 12,
+		$font-weight: 400,
+		$line-height: 24
+	) {
+    font-weight: $font-weight;
+	color: var(--foreground);
+    @include adaptiveValue("font-size", $font-size, $font-size-mobile);
+	@include adaptiveValue("line-height", $line-height, 20);
+}
+
+@mixin callout(
+		$font-size: 14,
+		$font-size-mobile: 10,
+		$font-weight: 400,
+		$line-height: 20
+	) {
+		font-weight: $font-weight;
+		color: hsl(var(--foreground));
+		@include adaptiveValue("font-size", $font-size, $font-size-mobile);
+		@include adaptiveValue("line-height", $line-height, 18);
+	}
+
+@mixin adaptiveValue($property, $startSize, $minSize, $widthFrom: $containerWidth, $widthTo: $minWidth, $keepSize: 0) {
+	$addSize: ($startSize - $minSize);
+	@if ($widthFrom == $containerWidth and $maxWidthContainer == 0) {
+		$widthFrom: $maxWidth;
+	}
+	@if ($minSize <= 0) {
+		$minSize: 0.0001;
+	}
+	@if ($startSize <= 0) {
+		$startSize: 0.0001;
+	}
+
+	$widthFromMedia: em($widthFrom);
+	$widthToMedia: em($widthTo);
+
+	// Формула плавающего значения
+	// Источник: https://css-tricks.com/linearly-scale-font-size-with-css-clamp-based-on-the-viewport/
+	$slope:  calc(($startSize - $minSize) / ($widthFrom - $widthTo));
+	$yIntersection: -$widthTo * $slope + $minSize;
+	$flyValue: #{rem($yIntersection)}" + " #{($slope * 100)}vw;
+
+	$propertyValue: #{"clamp(" rem($minSize) "," $flyValue "," rem($startSize) ")"};
+	@if ($minSize > $startSize) {
+		$propertyValue: #{"clamp(" rem($startSize) "," $flyValue "," rem($minSize) ")"};
+	}
+
+	@if $widthFrom == $containerWidth or $widthFrom == $maxWidth or $keepSize == 1 or $keepSize == 2 {
+		@media (min-width: $widthFromMedia) {
+			#{$property}: rem($startSize);
+		}
+	}
+	@media (min-width: $widthToMedia) and (max-width: $widthFromMedia) {
+		@supports (#{$property}: $propertyValue) {
+			#{$property}: $propertyValue;
+		}
+		@supports not (#{$property}: $propertyValue) {
+			#{$property}: calc(
+				#{rem($minSize)} + #{$addSize} * (100vw - #{rem($widthTo)}) / #{(calc($widthFrom / 16) -  calc($widthTo / 16))}
+			);
+		}
+	}
+	@if $widthTo == $minWidth or $keepSize == 1 or $keepSize == 3 {
+		@media (max-width: $widthToMedia) {
+			#{$property}: rem($minSize);
+		}
+	}
+}
