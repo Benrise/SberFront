@@ -22,6 +22,12 @@
     &__additional-panel {
         width: 25%;
     }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
 }
 
 .header {

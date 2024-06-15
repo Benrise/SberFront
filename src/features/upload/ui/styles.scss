@@ -1,0 +1,121 @@
+
+.upload-form {
+    &__edit {
+        position: absolute;
+        border-radius: 999px;
+        bottom: 12px;
+        right: 12px;
+        outline: 6px solid hsl(var(--background));
+        z-index: 50;
+      }
+  }
+
+  .upload {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  
+    input[type="file"] {
+      display: none;
+    }
+  
+    &__area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      @include adaptiveValue('padding', 64, 16);
+      border: 2px dashed hsl(var(--border));
+      @include adaptiveValue('gap', 12, 8);
+      border-radius: 12px;
+  
+      transition: all 0.2s ease-in-out;
+  
+      &:hover {
+        background-color: hsl(var(--muted));
+      }
+    }
+  
+    &__icon {
+      @include adaptiveValue('width', 64, 32);
+      @include adaptiveValue('height', 64, 32);
+    }
+  
+    &__body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      p {
+        text-align: center;
+        @include body();
+      }
+    }
+
+    &__delete {
+      display: flex;
+      width: 100%;
+      padding-bottom: 16px;
+    }
+  
+    &__text {
+      color: hsl(var(--muted-foreground)) !important;
+    }
+  
+    &__uploaded {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media screen and (max-width: 640px) {
+        &__delete {
+            justify-content: center;
+        }
+    }
+  }
+  
+  .file {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    @include body();
+  
+    &__format {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background-color: hsl(var(--secondary));
+      line-height: 0;
+      font-size: 12px;
+    }
+  
+    &__text {
+      display: flex;
+      flex-direction: column;
+    }
+  
+    &__name {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      max-width: 264px;
+    }
+  
+    &__main {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+  
+    &__size {
+      color: hsl(var(--muted-foreground));
+    }
+  }
