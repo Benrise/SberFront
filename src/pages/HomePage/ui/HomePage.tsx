@@ -1,8 +1,21 @@
 import { Content, ContentProps } from "@/shared/ui/content"
 import "./styles.scss"
 import { BillsList } from "@/widgets/bills/list"
+import { DataTable } from "@/features/datatable"
+import { useEffect } from "react"
+import { TableModel } from "@/entities/table"
 
 export const HomePage = () => {
+
+    const tableStore = TableModel.tableStore;
+
+    const startPreload = async () => {
+        await tableStore.preloadTable();
+    }
+
+    useEffect(() => {
+        startPreload();
+    }, []);
 
     const contentProps: ContentProps = {
         mainPanel: {
@@ -10,7 +23,7 @@ export const HomePage = () => {
                 title: "Объекты распределения",
                 description: "Список объектов распределения"
             },
-            body: <div>Таблица объектов распределения</div>
+            body: <DataTable/>
         },
         additionalPanel: {
             text: {

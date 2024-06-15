@@ -6,6 +6,7 @@ import IconLoadingCircle from '~icons/eos-icons/bubble-loading';
 
 import './styles.scss';
 import { UploadForm } from "@/features/upload/ui";
+import { useReactTable } from "@tanstack/react-table";
 
 export const BillsList: React.FunctionComponent = observer(() => {
     const tableStore = TableModel.tableStore;

@@ -1,0 +1,31 @@
+.data-table {
+    height: 100%;
+
+    &__fallback {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        gap: 12px;
+        @include callout();
+        color: hsl(var(--muted-foreground));
+    }
+} 
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+
+    &__left,
+    &__right {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+        @include callout();
+        color: hsl(var(--muted-foreground));
+    }
+}

@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { http } from '../api';
-import { BaseDto } from '@/shared/api/types';
+import { BaseDto, IBaseListParams } from '@/shared/api/types';
 import { StatusCodes } from 'http-status-codes';
 
 export class TableStore {
@@ -30,6 +30,21 @@ export class TableStore {
     }
     finally {
       this.setLoading('list', false);
+    }
+  }
+
+  async preloadTable(dfName?: string) {
+    this.setLoading('item', true);
+    try {
+      const response = await http.table.pre_load_table(dfName);
+      if (response.status === StatusCodes.OK) {
+        return response.data.message
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+    finally {
+      this.setLoading('item', false);
     }
   }
 
@@ -69,8 +84,25 @@ export class TableStore {
     }
   }
 
+  async getTable(dfName?: string, params?: IBaseListParams) {
+    this.setLoading('item', true);
+    try {
+      const response = await http.table.get_table(dfName, params);
+      if (response.status === StatusCodes.OK) {
+        return response.data
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+    finally {
+      this.setLoading('item', false);
+    }
+  }
+
   setLoading(operation: keyof typeof this.loading, state: boolean) {
-    this.loading[operation] = state;
+    runInAction(() => {
+      this.loading[operation] = state;
+    });
   }
 }
 

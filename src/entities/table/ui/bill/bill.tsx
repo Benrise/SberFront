@@ -13,7 +13,7 @@ import {
     AlertDialogTrigger,
     } from "@/shared/ui/alert-dialog"
 
-import IconTrash from '~icons/heroicons/trash?width=16px&height=16px';
+import IconTrash from '~icons/heroicons/trash';
 
 import './styles.scss';
 import { useState } from "react";
