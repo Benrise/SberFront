@@ -1,0 +1,22 @@
+name: Build and Push
+
+on:
+  push:
+    branches:
+      - main
+      
+jobs:
+  job1:
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+        - name: Run sshpass commands
+          uses: matheusvanzan/sshpass-action@v2
+          with:
+            host: ${{ secrets.VIRTUAL_IP }}
+            user: ${{ secrets.VIRTUAL_LOGIN }}
+            pass: ${{ secrets.VIRTUAL_PASS }}
+            run: |
+              cd sber-front
+              git pull
+              docker compose up --build -d
