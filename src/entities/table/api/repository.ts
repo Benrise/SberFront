@@ -21,7 +21,7 @@ export class TableRepository {
         return this.axiosInstance.post(`${this.endpoint}/load_table`, formData, fileRequestConfig.config);
     }
 
-    async delete_table(file_name: string, df_name: string) {
+    async delete_table(file_name: string, df_name?: string) {
         const params = {
             filename: file_name,
             df_name: df_name

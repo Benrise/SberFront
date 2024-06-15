@@ -1,13 +1,12 @@
-import { TableModel } from "@/entities/table";
-import { Button } from "@/shared/ui/button";
-import { ScrollArea } from "@/shared/ui/scroll-area";
+import { Bill, TableModel } from "@/entities/table";
 import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 
-import IconLoadingCircle from '~icons/eos-icons/bubble-loading?width=48px&height=48px';
+import IconLoadingCircle from '~icons/eos-icons/bubble-loading?length=48px';
 
 import './styles.scss';
 import { UploadForm } from "@/features/upload/ui";
+import { BaseDto } from "@/shared/api/types";
 
 export const BillsList: React.FunctionComponent = observer(() => {
     const tableStore = TableModel.tableStore;
@@ -28,17 +27,13 @@ export const BillsList: React.FunctionComponent = observer(() => {
                     <div>Список счетов пуст</div>
                 </div>
             ) : (
-                <ScrollArea className="h-full w-full">
-                    <div className="bills-list__items">
-                        {tableStore.bills.map((bill) => (
-                            <div className="bills-list__item" key={bill.id}>
-                                {bill.name}
-                            </div>
-                        ))}
-                    </div>
-                </ScrollArea>
+                <div className="bills-list__items">
+                    {tableStore.bills.map((bill) => (
+                        <Bill key={bill.id} bill={bill}/>
+                    ))}
+                </div>
             )}
-            <UploadForm />
+            <UploadForm store={tableStore} />
         </div>
     );
 });

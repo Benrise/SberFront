@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { http } from '../api';
 import { BaseDto } from '@/shared/api/types';
+import { StatusCodes } from 'http-status-codes';
 
 export class TableStore {
 
@@ -43,20 +44,27 @@ export class TableStore {
     }
   }
 
-  async deleteTable(fileName: string, dfName: string) {
+  async deleteTable(fileName: string, dfName?: string) {
     this.isLoading = true;
     try {
-      await http.table.delete_table(fileName, dfName);
-      runInAction(() => {
-        this.fetchBills();
-        this.isLoading = false;
-      });
+      const response = await http.table.delete_table(fileName, dfName);
+      if (response.status === StatusCodes.OK) {
+        runInAction(() => {
+          this.fetchBills();
+          this.isLoading = false;
+        });
+        return response.data.message;
+      }
     } catch (error: any) {
       console.log(error);
     }
     finally {
       this.isLoading = false;
     }
+  }
+
+  setIsLoading(state: boolean) {
+    this.isLoading = state;
   }
 }
 

@@ -1,0 +1,16 @@
+.bill {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    &__text {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 100%;
+        @include callout();
+    }
+}

@@ -30,10 +30,20 @@ import { Input } from '@/shared/ui/input';
 import { useState } from "react";
 
 import './styles.scss'
+import { TableStore } from "@/entities/table/model";
+import { useToast } from "@/shared/ui/use-toast";
+import { observer } from "mobx-react-lite";
 
+interface UploadFormProps {
+    store: TableStore;
+    fileId?: string;
+}
 
-export const UploadForm: React.FunctionComponent = () => {
-    const uploadedFile = useState<File>();
+export const UploadForm: React.FunctionComponent<UploadFormProps> = observer(({store, fileId}) => {
+    const { toast } = useToast();
+
+    const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
 
     const calculateFileSize = (bytes: number) => {
         const sizes = ['Байт', 'КБ', 'МБ', 'ГБ', 'ТБ'];
@@ -44,9 +54,58 @@ export const UploadForm: React.FunctionComponent = () => {
         return `${parseFloat((bytes / Math.pow(1024, i)).toFixed(2))} ${sizes[i]}`;
     }
 
+    const clearFile = () => {
+        setUploadedFile(null);
+      };
+
+      const onFileChange = (e: any) => {
+        const maxFileSizeInMB = 64;
+        const maxFileSizeInKB = 1024 * 1024 * maxFileSizeInMB;
+      
+        const file = e.target.files[0]
+      
+        if (file.size > maxFileSizeInKB) {
+            toast({
+                variant: 'destructive',
+                title: `Превышен максимальный размер файла`,
+                description: `Файл ${file.name} не загружен. Максимальный размер - ${maxFileSizeInMB} МБ.`,
+            });
+            return
+        }
+      
+        setUploadedFile(file);
+        e.target.value = '';
+      };  
+
+    const uploadFile = async () => {
+        if (uploadedFile) {
+            try {
+                store.setIsLoading(true);
+                await store.loadTable(uploadedFile);
+                setIsOpen(false);
+                toast({
+                  variant: 'success',
+                  title: 'Файл загружен',
+                  description: 'Файл успешно загружен',
+                });
+            }
+            catch (error: any) {
+                console.log(error);
+                toast({
+                    variant: 'destructive',
+                    title: 'Непредвиденная ошибка',
+                    description: 'Не удалось загрузить файл',
+                  });
+            }
+            finally {
+                store.setIsLoading(false);
+            }
+        }
+      };
+
     return (
         <div>
-          <Drawer>
+          <Drawer open={isOpen} onOpenChange={setIsOpen}>
             <DrawerTrigger asChild>
               <Button className="w-full">
                 Загрузить
@@ -60,7 +119,7 @@ export const UploadForm: React.FunctionComponent = () => {
                 </DrawerDescription>
               </DrawerHeader>
               <div className="upload__delete">
-                {uploadedFile && (
+                {uploadedFile && !!fileId && (
                   <div>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
@@ -87,7 +146,7 @@ export const UploadForm: React.FunctionComponent = () => {
                 )}
               </div>
               <label htmlFor="excel-file" className="upload-form__upload upload">
-                <Input accept=".xlsx, .xls" id="excel-file" type="file" />
+                <Input onChange={(e: any) => onFileChange(e)} accept=".xlsx, .xls" id="excel-file" type="file" />
                 <div className="upload__area">
                   <IconCloud className="upload__icon" />
                   <div className="upload__body">
@@ -97,27 +156,27 @@ export const UploadForm: React.FunctionComponent = () => {
                   </div>
                 </div>
               </label>
-              {uploadedFile[0] && (
+              {uploadedFile && (
                 <div className="upload__uploaded">
                   <div className="upload__file file">
                     <div className="file__main">
                       <div className="file__format">
-                        {uploadedFile[0].type.split('/')[1]}
+                        {uploadedFile.name.split('.').slice(-1)[0]}
                       </div>
                       <div className="file__text">
                         <div className="file__name">
-                          {uploadedFile[0].name}
+                          {uploadedFile.name}
                         </div>
                         <div className="file__size">
-                          {calculateFileSize(uploadedFile[0].size || 0)}
+                          {calculateFileSize(uploadedFile.size || 0)}
                         </div>
                       </div>
                     </div>
-                    <Button className="text-foreground" size="icon" variant="destructive">
+                    <Button onClick={clearFile} size="icon" variant="destructive">
                       <IconXmark />
                     </Button>
                   </div>
-                  <Button className="w-full">
+                  <Button onClick={uploadFile} className="w-full">
                     Загрузить
                   </Button>
                 </div>
@@ -126,4 +185,4 @@ export const UploadForm: React.FunctionComponent = () => {
           </Drawer>
         </div>
       );
-}
+})
