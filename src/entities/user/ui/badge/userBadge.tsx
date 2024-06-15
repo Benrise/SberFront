@@ -1,13 +1,13 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar"
+import { observer } from "mobx-react-lite";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { UserModel } from "@/entities/user";
-import './styles.scss'
+import './styles.scss';
 
 interface UserBadgeProps {
-    user: UserModel.UserDto
+    user: UserModel.UserDto;
 }
 
-export const UserBadge: React.FunctionComponent<UserBadgeProps> = ({ user }) => {
-
+export const UserBadge: React.FunctionComponent<UserBadgeProps> = observer(({ user }) => {
     return (
         <div className="user-badge">
             <div className="user-badge__name">{user.username}</div>
@@ -18,5 +18,5 @@ export const UserBadge: React.FunctionComponent<UserBadgeProps> = ({ user }) => 
                 </AvatarFallback>
             </Avatar>
         </div>
-    )
-}
+    );
+});

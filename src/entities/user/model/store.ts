@@ -4,12 +4,11 @@ import { http } from '../api';
 
 export class UserStore {
   user: UserDto;
-  http: any;
+
   isLoading: boolean = false;
 
   constructor() {
     this.user = {} as UserDto;
-    this.http = http.user;
     this.isLoading = false;
     makeAutoObservable(this);
   }
@@ -17,7 +16,7 @@ export class UserStore {
   async me() {
     this.isLoading = true;
     try {
-      const { data } = await this.http.me();
+      const { data } = await http.user.me();
       runInAction(() => {
         this.user = data;
       });
