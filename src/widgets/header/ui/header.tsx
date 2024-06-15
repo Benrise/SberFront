@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import './styles.scss'
 import { UserBadge } from '@/entities/user/ui/badge'
 
@@ -21,25 +21,46 @@ export const Header: React.FunctionComponent = observer(() => {
         <header className='header'>
             <div className="header__container">
                 <div className="header__left">
-                    <Link to='/' className='header__logo'>
+                    <NavLink to='/' className='header__logo'>
                     <img src="/images/svg/logo/sber.svg" alt='Логотип сбера' />
-                    </Link>
+                    </NavLink>
                     <nav>
                         <ul className='header__menu menu'>
                             <li className='menu__item'>
-                                <Link to='/' className='menu__link'>
-                                    <Button variant={'link'}>Главная</Button>
-                                </Link>
+                                <NavLink to='/'>
+                                    {({ isActive }) => (
+                                            <Button
+                                                variant={'link'}
+                                                className={isActive ? 'opacity-100' : ''}
+                                            >
+                                                Главная
+                                            </Button>
+                                    )}
+                                </NavLink>
                             </li>
                             <li className='menu__item'>
-                                <Link to='/preprocessing' className='menu__link'>
-                                    <Button variant={'link'}>Предобработка</Button>
-                                </Link>
+                                <NavLink to='/preprocessing'>
+                                    {({ isActive }) => (
+                                            <Button
+                                                variant={'link'}
+                                                className={isActive ? 'opacity-100' : ''}
+                                            >
+                                                Предобработка
+                                            </Button>
+                                    )}
+                                </NavLink>
                             </li>
                             <li className='menu__item'>
-                                <Link to='/distribution' className='menu__link'>
-                                    <Button variant={'link'}>Распределение</Button>
-                                </Link>
+                                <NavLink to='/distribution'>
+                                    {({ isActive }) => (
+                                            <Button
+                                                variant={'link'}
+                                                className={isActive ? 'opacity-100' : ''}
+                                            >
+                                                Распределение
+                                            </Button>
+                                    )}
+                                </NavLink>
                             </li>
                         </ul>
                     </nav>
