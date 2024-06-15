@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import IconDotsLoading from '~icons/eos-icons/three-dots-loading?length=32px';
+import IconDotsLoading from '~icons/eos-icons/three-dots-loading';
 
 import { cn } from "@/shared/lib/utils"
 
@@ -54,7 +54,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {loading && (
           <div>
-            <IconDotsLoading />
+            <IconDotsLoading width={36} height={36} />
           </div>
         )}
         {!loading && props.children}

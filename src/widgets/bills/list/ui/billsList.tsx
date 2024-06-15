@@ -2,11 +2,10 @@ import { Bill, TableModel } from "@/entities/table";
 import { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 
-import IconLoadingCircle from '~icons/eos-icons/bubble-loading?length=48px';
+import IconLoadingCircle from '~icons/eos-icons/bubble-loading';
 
 import './styles.scss';
 import { UploadForm } from "@/features/upload/ui";
-import { BaseDto } from "@/shared/api/types";
 
 export const BillsList: React.FunctionComponent = observer(() => {
     const tableStore = TableModel.tableStore;
@@ -17,9 +16,9 @@ export const BillsList: React.FunctionComponent = observer(() => {
 
     return (
         <div className="bills-list">
-            {tableStore.isLoading ? (
+            {tableStore.loading.list ? (
                 <div className="bills-list__fallback">
-                    <IconLoadingCircle className="text-primary"/>
+                    <IconLoadingCircle className="text-primary" width={36} height={36}/>
                 </div>
             ) : tableStore.bills.length === 0 ? (
                 <div className="bills-list__fallback">

@@ -6,52 +6,58 @@ import { StatusCodes } from 'http-status-codes';
 export class TableStore {
 
   bills: BaseDto[] = [];
-  isLoading: boolean = false;
+  loading = {
+    list: false,
+    item: false,
+    create: false,
+    update: false,
+    delete: false,
+  };
 
   constructor() {
     makeAutoObservable(this);
   }
 
   async fetchBills() {
-    this.isLoading = true;
+    this.setLoading('list', true);
     try {
       const response = await http.table.bills();
       runInAction(() => {
         this.bills = response.data;
-        this.isLoading = false;
       });
     } catch (error: any) {
       console.log(error);
     }
     finally {
-      this.isLoading = false;
+      this.setLoading('list', false);
     }
   }
 
   async loadTable(file: File | null) {
-    this.isLoading = true;
+    this.setLoading('create', true);
     try {
-      await http.table.load_table(file);
-      runInAction(() => {
-        this.fetchBills();
-        this.isLoading = false;
-      });
+      const response = await http.table.load_table(file);
+      if (response.status === StatusCodes.OK) {
+        runInAction(() => {
+          this.fetchBills();
+        }); 
+      }
+      return response.data.message;
     } catch (error: any) {
       console.log(error);
     }
     finally {
-      this.isLoading = false;
+      this.setLoading('create', false);
     }
   }
 
   async deleteTable(fileName: string, dfName?: string) {
-    this.isLoading = true;
+    this.setLoading('delete', true);
     try {
       const response = await http.table.delete_table(fileName, dfName);
       if (response.status === StatusCodes.OK) {
         runInAction(() => {
           this.fetchBills();
-          this.isLoading = false;
         });
         return response.data.message;
       }
@@ -59,12 +65,12 @@ export class TableStore {
       console.log(error);
     }
     finally {
-      this.isLoading = false;
+      this.setLoading('delete', false);
     }
   }
 
-  setIsLoading(state: boolean) {
-    this.isLoading = state;
+  setLoading(operation: keyof typeof this.loading, state: boolean) {
+    this.loading[operation] = state;
   }
 }
 

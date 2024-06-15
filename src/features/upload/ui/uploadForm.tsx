@@ -80,14 +80,14 @@ export const UploadForm: React.FunctionComponent<UploadFormProps> = observer(({s
     const uploadFile = async () => {
         if (uploadedFile) {
             try {
-                store.setIsLoading(true);
-                await store.loadTable(uploadedFile);
+                store.setLoading('create', true);
+                const message = await store.loadTable(uploadedFile);
                 setIsOpen(false);
                 toast({
-                  variant: 'success',
-                  title: 'Файл загружен',
-                  description: 'Файл успешно загружен',
-                });
+                    variant: 'success',
+                    title: 'Файл успешно отправлен',
+                    description: message,
+                  });
             }
             catch (error: any) {
                 console.log(error);
@@ -98,7 +98,7 @@ export const UploadForm: React.FunctionComponent<UploadFormProps> = observer(({s
                   });
             }
             finally {
-                store.setIsLoading(false);
+              store.setLoading('create', true);
             }
         }
       };
@@ -115,7 +115,7 @@ export const UploadForm: React.FunctionComponent<UploadFormProps> = observer(({s
               <DrawerHeader className="flex flex-col gap-2">
                 <DrawerTitle>Загрузка файла Excel</DrawerTitle>
                 <DrawerDescription>
-                  Поддерживаемые форматы: XLSX, XLS. Максимальный размер: 2 МБ
+                  Поддерживаемые форматы: XLSX, XLS. Максимальный размер: 64 МБ
                 </DrawerDescription>
               </DrawerHeader>
               <div className="upload__delete">
@@ -176,9 +176,14 @@ export const UploadForm: React.FunctionComponent<UploadFormProps> = observer(({s
                       <IconXmark />
                     </Button>
                   </div>
-                  <Button onClick={uploadFile} className="w-full">
-                    Загрузить
-                  </Button>
+                  <div className="flex gap-4">
+                    <Button onClick={() => setIsOpen(false)} className="w-full" variant={"outline"}>
+                      Закрыть
+                    </Button>
+                    <Button onClick={uploadFile} className="w-full">
+                      Загрузить
+                    </Button>
+                  </div>
                 </div>
               )}
             </DrawerContent>
