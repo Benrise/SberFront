@@ -4,8 +4,16 @@ import { UserBadge } from '@/entities/user/ui/badge'
 
 import IconExit from '~icons/heroicons/arrow-right-end-on-rectangle';
 import { Button } from '@/shared/ui/button';
+import { useRootStore } from '@/app/store';
 
 const Header = () => {
+
+    const { authStore } = useRootStore();
+
+    const logout = () => {
+        authStore.logout();
+    }
+
     return (
         <header className='header'>
             <div className="header__container">
@@ -35,7 +43,7 @@ const Header = () => {
                 </div>
                 <div className="header__right">
                     <UserBadge />
-                    <Button variant={'ghost'} size={'icon'}>
+                    <Button variant={'ghost'} size={'icon'} onClick={logout}>
                         <IconExit width={24} height={24} />
                     </Button>
                 </div>

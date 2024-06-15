@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import IconDotsLoading from '~icons/eos-icons/three-dots-loading?width=32px&height=32px';
 
 import { cn } from "@/shared/lib/utils"
 
@@ -18,7 +19,7 @@ const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "underline-offset-4 hover:underline",
+        link: "hover:opacity-75",
       },
       size: {
         default: "h-9 px-4 py-2",
@@ -38,6 +39,7 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
+  loading? : boolean 
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -48,7 +50,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
-      />
+        disabled={props.loading}
+      >
+        {props.loading && (
+          <div>
+            <IconDotsLoading />
+          </div>
+        )}
+        {!props.loading && props.children}
+      </Comp>
     )
   }
 )
