@@ -1,9 +1,12 @@
+import { useEffect } from "react"
+
 import { Content, ContentProps } from "@/shared/ui/content"
-import "./styles.scss"
 import { BillsList } from "@/widgets/bills/list"
 import { DataTable } from "@/features/datatable"
-import { useEffect } from "react"
 import { TableModel } from "@/entities/table"
+import { DataframeNamesEnum } from "@/entities/table/model"
+
+import "./styles.scss"
 
 export const HomePage = () => {
 
@@ -23,7 +26,7 @@ export const HomePage = () => {
                 title: "Объекты распределения",
                 description: "Список объектов распределения"
             },
-            body: <DataTable/>
+            body: <DataTable dfName={DataframeNamesEnum.BILLS}/>
         },
         additionalPanel: {
             text: {

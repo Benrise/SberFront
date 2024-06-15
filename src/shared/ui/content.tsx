@@ -7,9 +7,10 @@ interface HeaderTextBody {
 }
 
 interface PanelConfig {
-    text: HeaderTextBody;
+    text?: HeaderTextBody;
     toolbarButtons?: React.ReactNode;
     body: React.ReactNode;
+    extraAction?: React.ReactNode;
 }
 
 export interface ContentProps {
@@ -21,38 +22,45 @@ export interface ContentProps {
 export const Content: React.FC<ContentProps> = ({ mainPanel, additionalPanel, reversed }) => {
   return (
     <div className={`content ${reversed ? 'flex-row-reverse' : ''}`}>
-        <div className="content__additional-panel">
-            <div className="content__header header">
-                <div className="header__text">
-                    <div className="header__title">
-                        {additionalPanel.text.title}
+        <div className="flex flex-col gap-6 w-[25%]">
+            <div className="content__additional-panel">
+                {additionalPanel.text && (
+                    <div className="content__header header">
+                        <div className="header__text">
+                            <div className="header__title">
+                                {additionalPanel.text.title}
+                            </div>
+                            <div className="header__description">
+                                {additionalPanel.text.description}
+                            </div>
+                        </div>
+                        <div className="header__toolbar">
+                            {mainPanel.toolbarButtons}
+                        </div>
                     </div>
-                    <div className="header__description">
-                        {additionalPanel.text.description}
-                    </div>
-                </div>
-                <div className="header__toolbar">
-                    {mainPanel.toolbarButtons}
+                )}
+                <div className="content__body">
+                    {additionalPanel.body}
                 </div>
             </div>
-            <div className="content__body">
-                {additionalPanel.body}
-            </div>
+            {additionalPanel.extraAction}
         </div>
          <div className="content__main-panel">
-            <div className="content__header header">
-                <div className="header__text">
-                    <div className="header__title">
-                        {mainPanel.text.title}
+            {mainPanel.text && (
+                <div className="content__header header">
+                    <div className="header__text">
+                        <div className="header__title">
+                            {mainPanel.text.title}
+                        </div>
+                        <div className="header__description">
+                            {mainPanel.text.description}
+                        </div>
                     </div>
-                    <div className="header__description">
-                        {mainPanel.text.description}
+                    <div className="header__toolbar">
+                        {mainPanel.toolbarButtons}
                     </div>
                 </div>
-                <div className="header__toolbar">
-                    {mainPanel.toolbarButtons}
-                </div>
-            </div>
+            )}
             <div className="content__body">
                 {mainPanel.body}
             </div>

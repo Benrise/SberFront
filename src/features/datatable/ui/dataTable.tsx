@@ -14,9 +14,14 @@ import {
 
 import IconLoadingCircle from '~icons/eos-icons/bubble-loading';
 
-import './styles.scss';
 import { Button } from "@/shared/ui/button";
 import { DataframeNamesEnum } from "@/entities/table/model";
+
+import './styles.scss';
+
+type DataTableProps = {
+  dfName: DataframeNamesEnum;
+};
 
 type TableRowData = Record<string, string>;
 
@@ -27,7 +32,7 @@ type PaginationMeta = {
   pages: number;
 };
 
-const DataTable: React.FunctionComponent = observer(() => {
+const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName }) => {
   const tableStore = TableModel.tableStore;
 
   const [data, setData] = useState<TableRowData[]>([]);
@@ -36,7 +41,7 @@ const DataTable: React.FunctionComponent = observer(() => {
   const fetchTable = async (page: number, pageSize: number) => {
     try {
       const params = { pg: page, n: pageSize };
-      const response = await tableStore.getTable(DataframeNamesEnum.BILLS, params);
+      const response = await tableStore.getTable(dfName, params);
 
       if (response?.data) {
         setData(response.data);
@@ -101,13 +106,13 @@ const DataTable: React.FunctionComponent = observer(() => {
   };
 
   return (
-    <div className="data-table">
+    <>
       {tableStore.loading.item ? (
         <div className="data-table__fallback">
           <IconLoadingCircle className="text-primary" width={48} height={48} />
         </div>
       ) : (
-        <>
+        <div className="data-table">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -184,9 +189,9 @@ const DataTable: React.FunctionComponent = observer(() => {
                 </Button>
             </div>
           </div>
-        </>
+        </div>
       )}
-    </div>
+    </>
   );
 });
 
