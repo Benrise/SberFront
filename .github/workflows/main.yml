@@ -3,11 +3,26 @@ name: Build and Push
 on:
   push:
     branches:
-      - master
+      - main
       
 jobs:
   job1:
+    name: Build auth
+    runs-on: ubuntu-latest
+    env:
+      LOGIN: ${{ secrets.DOCKERHUB_LOGIN }}
+      NAME: ${{ secrets.DOCKER_NAME }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build image
+        run: docker build -t $LOGIN/$NAME:latest ./auth
+      - name: Docker login
+        run: echo ${{ secrets.DOCKERHUB_PASS }} | docker login -u ${{ secrets.DOCKERHUB_LOGIN }} --password-stdin
+      - name: Push image
+        run: docker push $LOGIN/$NAME:latest
+  job3:
     name: Publish
+    needs: job1
     runs-on: ubuntu-latest
     steps:
         - name: Run sshpass commands
@@ -18,5 +33,5 @@ jobs:
             pass: ${{ secrets.VIRTUAL_PASS }}
             run: |
               cd sber-front
-              git pull
-              docker compose up --build -d
+              docker compose pull
+              docker compose up -d
