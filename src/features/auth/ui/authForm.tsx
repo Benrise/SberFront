@@ -19,6 +19,7 @@ import {
 
 import './styles.scss'
 import { loginSchema, registerSchema } from '../model';
+import { AUTH_SBER_URL } from '@/app/config';
 
 export const AuthForm: React.FC = observer(() => {
 
@@ -48,6 +49,11 @@ export const AuthForm: React.FC = observer(() => {
     if (authStore.isAuthorized ) {
         return null
     }
+
+    const currentURL = new URL(window.location.href);
+    currentURL.search = '';
+    const sberAuthUrl = `${AUTH_SBER_URL}?returned_url=${currentURL.toString()}`;
+    
 
     return (
         <div className="auth-form">
@@ -146,7 +152,9 @@ export const AuthForm: React.FC = observer(() => {
                     или
                     <Separator />
                 </div>
-                <Button variant={"outline"} className="w-full" size={"lg"}>Войти по Сбер ID</Button>
+                <a href={sberAuthUrl} className="w-full">
+                    <Button variant={"outline"} className="w-full" size={"lg"}>Войти по Сбер ID</Button>
+                </a>
             </div>
         </div>
     );
