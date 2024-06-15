@@ -1,0 +1,42 @@
+.content {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    height: 100%;
+
+    &__main-panel,
+    &__additional-panel {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        height: 100%;
+    }
+
+    &__main-panel {
+        width: 75%;
+    }
+
+    &__additional-panel {
+        width: 25%;
+    }
+}
+
+.header {
+    &__text {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    &__title {
+        @include subtitle();
+    }
+
+    &__description {
+        @include callout();
+        color: hsl(var(--muted-foreground));
+    }
+}

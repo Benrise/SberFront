@@ -12,7 +12,7 @@ export class AuthRepository {
         return this.axiosInstance.post(`${this.endpoint}/signup`, credentials);
     }
 
-    async refresh() {
-        return this.axiosInstance.get<AuthResponseDto>(`${this.endpoint}/refresh`);
+    async refresh(refreshToken: string) {
+        return this.axiosInstance.post<AuthResponseDto>(`${this.endpoint}/refresh`, {refresh_token: refreshToken});
     }
 }

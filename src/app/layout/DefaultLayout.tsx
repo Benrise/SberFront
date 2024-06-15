@@ -6,10 +6,12 @@ import './styles.scss'
 const DefaultLayout = () => {
     return (
         <>
-            <Header />
-            <main className='default-layout'>
-                <Outlet/>
-            </main>
+            <div className='default-layout'>
+                <Header />
+                <main className="default-layout__main">
+                    <Outlet/>
+                </main>
+            </div>
         </>
     )
 }

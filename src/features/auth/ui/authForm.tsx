@@ -22,7 +22,6 @@ import { loginSchema, registerSchema } from '../model';
 import { AUTH_SBER_URL } from '@/app/config';
 
 export const AuthForm: React.FC = observer(() => {
-
     const authStore = AuthModel.authStore;
 
     const initialValuesLogin: AuthModel.AuthCredentialsDto = { username: '', password: '' };

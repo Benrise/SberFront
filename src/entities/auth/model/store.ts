@@ -3,7 +3,6 @@ import { AuthCredentialsDto } from '../model';
 import { http } from '../api';
 
 export class AuthStore {
-  accessToken?: string = undefined;
   isAuthorized: boolean = false;
   isLoading: boolean = false;
 
@@ -12,72 +11,69 @@ export class AuthStore {
   }
 
   async login(credentials: AuthCredentialsDto) {
-    this.isLoading = true;
+    this.setLoading(true);
     try {
-      const { data, status } = await http.auth.login(credentials);
+      const { data } = await http.auth.login(credentials);
       runInAction(() => {
+        localStorage.setItem('refreshToken', data.refresh_token);
         localStorage.setItem('accessToken', data.access_token);
-        this.accessToken = data.access_token;
         this.isAuthorized = true;
-        this.isLoading = false;
       });
-
-    } catch (err: any) {
-      console.error(err);
-      runInAction(() => {
-        this.isLoading = false;
-      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.setLoading(false);
     }
   }
 
   async logout() {
-    this.isLoading = true;
+    this.setLoading(true);
     try {
       runInAction(() => {
-        this.accessToken = undefined;
         this.isAuthorized = false;
-        this.isLoading = false;
         localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
       });
-    } catch (err) {
-      console.error(err);
-      runInAction(() => {
-        this.isLoading = false;
-      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.setLoading(false);
     }
   }
 
-  async refresh() {
-    this.isLoading = true;
+  async refresh(refreshToken: string) {
+    this.setLoading(true);
     try {
-      const response = await http.auth.refresh();
+      const { data } = await http.auth.refresh(refreshToken);
       runInAction(() => {
-        localStorage.setItem('accessToken', response.data.access_token);
-        this.accessToken = response.data.access_token;
+        localStorage.setItem('refreshToken', data.refresh_token);
+        localStorage.setItem('accessToken', data.access_token);
         this.isAuthorized = true;
-        this.isLoading = false;
       });
-    } catch (err) {
-      console.error(err);
-      runInAction(() => {
-        this.isLoading = false;
-      });
+    } catch (error) {
+      console.error(error);
+      await this.logout();
+    } finally {
+      this.setLoading(false);
     }
   }
 
   async register(credentials: AuthCredentialsDto) {
-    this.isLoading = true;
+    this.setLoading(true);
     try {
       await http.auth.register(credentials);
-      runInAction(async () => {
-        await this.login(credentials);
-      });
-    } catch (err) {
-      console.error(err);
-      runInAction(() => {
-        this.isLoading = false;
-      });
+      await this.login(credentials);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      this.setLoading(false);
     }
+  }
+
+  private setLoading(state: boolean) {
+    runInAction(() => {
+      this.isLoading = state;
+    });
   }
 }
 

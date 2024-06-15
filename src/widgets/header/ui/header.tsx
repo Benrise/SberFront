@@ -9,7 +9,6 @@ import { AuthModel } from '@/entities/auth';
 import { UserModel } from '@/entities/user';
 
 export const Header: React.FunctionComponent = observer(() => {
-
     const authStore= AuthModel.authStore;
     const userStore = UserModel.userStore;
 

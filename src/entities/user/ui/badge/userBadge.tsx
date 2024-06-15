@@ -12,7 +12,7 @@ export const UserBadge: React.FunctionComponent<UserBadgeProps> = observer(({ us
         <div className="user-badge">
             <div className="user-badge__name">{user.username}</div>
             <Avatar>
-                <AvatarImage className="max-w-[32px] max-h-[32px]" src="images/png/user.png" alt="Аватар"/>
+                <AvatarImage className="max-w-[24px] max-h-[24px]" src="images/png/user.png" alt="Аватар"/>
                 <AvatarFallback>
                     ?
                 </AvatarFallback>

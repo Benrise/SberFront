@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { type InternalAxiosRequestConfig, type AxiosResponse, AxiosError } from "axios";
 import { API_BASE_URL } from '../config';
+import { StatusCodes } from 'http-status-codes';
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -17,9 +18,6 @@ axiosInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${localStorage.getItem('accessToken')}`; 
     }
     return config;
-  },
-  (error: AxiosError): Promise<AxiosError> => {
-    return Promise.reject(error);
   }
 );
 
@@ -34,8 +32,26 @@ axiosInstance.interceptors.response.use(
   /**
    * Error response
    */
-  async (error: AxiosError) => {
-    return Promise.reject(error);
+  async (error: AxiosError)  => {
+    const originalRequest: any = error.config!;
+    if (error.request.status === StatusCodes.UNAUTHORIZED && error.config &&!originalRequest._isRetry) {
+      originalRequest._isRetry = true;
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) {
+          throw error;
+        }
+        const { data } = await axiosInstance.post(`/auth/refresh`, {refresh_token: refreshToken}, {withCredentials: true});
+        localStorage.setItem('refreshToken', data.refresh_token);
+        localStorage.setItem('accessToken', data.access_token);
+        return axiosInstance.request(originalRequest);
+      }
+      catch (err) {
+        console.log(err)
+        window.location.reload();
+      }
+    }
+    throw error;
   }
 );
 

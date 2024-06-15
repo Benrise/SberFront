@@ -21,10 +21,9 @@ export const App: FunctionComponent = () => {
       return;
     }
 
-    if (localStorage.getItem('accessToken') && !authStore.isAuthorized) {
-      authStore.refresh().then(() => {
-        userStore.me();
-      });
+    if (localStorage.getItem('accessToken') && !authStore.isAuthorized && localStorage.getItem('refreshToken')) {
+      const refreshToken = localStorage.getItem('refreshToken')!;
+      authStore.refresh(refreshToken);
     }
   }, [authStore, userStore]);
 

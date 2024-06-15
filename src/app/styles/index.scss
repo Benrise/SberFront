@@ -1,6 +1,6 @@
 @import '@/app/styles/tailwind.css';
 
-#app {
+#root {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -14,6 +14,8 @@ html, body {
 
 [class*="__container"] {
     max-width: 1728px;
+    height: 100%;
+    padding: 24px;
     margin: 0 auto;
     @media screen and (max-width: 1536px) {
         max-width: 1440px;
