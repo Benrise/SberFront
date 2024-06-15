@@ -3,12 +3,12 @@ import { UserDto } from './types';
 import { http } from '../api';
 
 export class UserStore {
-  user?: UserDto;
+  user: UserDto;
   http: any;
   isLoading: boolean = false;
 
   constructor() {
-    this.user = undefined;
+    this.user = {} as UserDto;
     this.http = http.user;
     this.isLoading = false;
     makeAutoObservable(this);
@@ -17,9 +17,9 @@ export class UserStore {
   async me() {
     this.isLoading = true;
     try {
-      const response = await this.http.me();
+      const { data } = await this.http.me();
       runInAction(() => {
-        this.user = response.data;
+        this.user = data;
       });
     } catch (error) {
       runInAction(() => {

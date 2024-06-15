@@ -1,12 +1,18 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar"
+import { UserModel } from "@/entities/user";
 import './styles.scss'
 
-export const UserBadge = () => {
+interface UserBadgeProps {
+    user: UserModel.UserDto
+}
+
+export const UserBadge: React.FunctionComponent<UserBadgeProps> = ({ user }) => {
+
     return (
         <div className="user-badge">
-            <div className="user-badge__name">Артём</div>
+            <div className="user-badge__name">{user.username}</div>
             <Avatar>
-                <AvatarImage src="https://github.com/bradlc.png" alt="Аватар"/>
+                <AvatarImage className="max-w-[32px] max-h-[32px]" src="images/png/user.png" alt="Аватар"/>
                 <AvatarFallback>
                     ?
                 </AvatarFallback>

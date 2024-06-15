@@ -4,11 +4,14 @@ import { UserBadge } from '@/entities/user/ui/badge'
 
 import IconExit from '~icons/heroicons/arrow-right-end-on-rectangle';
 import { Button } from '@/shared/ui/button';
-import { useRootStore } from '@/app/store';
+import { observer } from 'mobx-react-lite';
+import { AuthModel } from '@/entities/auth';
+import { UserModel } from '@/entities/user';
 
-const Header = () => {
+export const Header: React.FunctionComponent = observer(() => {
 
-    const { authStore } = useRootStore();
+    const authStore= AuthModel.authStore;
+    const userStore = UserModel.userStore;
 
     const logout = () => {
         authStore.logout();
@@ -42,7 +45,7 @@ const Header = () => {
                     </nav>
                 </div>
                 <div className="header__right">
-                    <UserBadge />
+                    <UserBadge user={userStore.user} />
                     <Button variant={'ghost'} size={'icon'} onClick={logout}>
                         <IconExit width={24} height={24} />
                     </Button>
@@ -50,6 +53,4 @@ const Header = () => {
             </div>
         </header>
     )
-}
-
-export { Header }
+})

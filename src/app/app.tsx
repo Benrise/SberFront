@@ -9,10 +9,12 @@ import { DistributionPage } from '@/pages/DistributionPage'
 import { DefaultLayout, AuthLayout } from '@/app/layout'
 import { ProtectedRoute } from './router';
 import { AuthModel } from '@/entities/auth'
+import { UserModel } from '@/entities/user'
 
 export const App: FunctionComponent = () => {
 
   const authStore = AuthModel.authStore;
+  const userStore = UserModel.userStore;
 
   useEffect(() => {
     if (!localStorage.getItem('accessToken')) {
@@ -20,9 +22,11 @@ export const App: FunctionComponent = () => {
     }
 
     if (localStorage.getItem('accessToken')) {
-      authStore.refresh();
+      authStore.refresh().then(() => {
+        userStore.me();
+      });
     }
-  }, [authStore]);
+  }, [authStore, userStore]);
 
   return (
     <Routes>
