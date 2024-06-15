@@ -6,12 +6,15 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - .:/app
-      - /app/node_modules
+      - front_vol:/app/node_modules
     environment:
       - NODE_ENV=development
-      - VITE_APP_API_BASE_URL=${VITE_APP_API_BASE_URL:-/api}
-      - VITE_APP_API_PROTOCOL=${VITE_APP_API_PROTOCOL:-http}
-      - VITE_APP_API_HOST=${VITE_APP_API_HOST:-localhost}
-      - VITE_APP_API_SERVICE_PORT=${VITE_APP_API_SERVICE_PORT:-80}
-    command: pnpm run dev -- --host
+      - VITE_APP_API_BASE_URL=/api
+      - VITE_APP_API_PROTOCOL=http
+      - VITE_APP_API_HOST=62.109.8.64
+      - VITE_APP_API_SERVICE_PORT=8190
+      - VITE_APP_AUTH_SBER_URL=https://id.sber.ru/CSAFront/oidc/authorize.do?oidcReferrer=https%3A%2F%2Freg.greenmarathon.sberbank.ru&channel=browser&logUid=0c830a7fbb0f483eb41eae7ac07f660e&scope=openid%20name%20mobile%20email%20birthdate%20gender&client_type=PRIVATE&nonce=0d7ea9564ef6b0fc5d595f874da2f26f&code_challenge=loGt96bWh9NuK6psdbqNJ0kAa-dPsqS-wrazQb5NSpg&code_challenge_method=S256&state=a03e9baebbdf573cbc57a59b2f276e7e&response_type=code&redirect_uri=https%3A%2F%2Freg.greenmarathon.sberbank.ru%2Fsber_id.action&client_id=2e9b40e4-235c-432f-bf1f-ad4e7069e065&app=false&personalization=false&display=page
+    command: pnpm run dev --host 0.0.0.0
+
+volumes:
+  front_vol:

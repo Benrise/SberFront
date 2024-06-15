@@ -1,8 +1,8 @@
 # Используем официальный Node.js образ в качестве базового
-FROM node:21-alpine
+FROM node:21.6.1
 
 # Устанавливаем основной пакетный менеджер
-RUN npm install -g pnpm
+RUN npm install -g npm@10.8.0 -g pnpm && pnpm install
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
