@@ -15,22 +15,9 @@ import {
 import IconLoadingCircle from '~icons/eos-icons/bubble-loading';
 
 import { Button } from "@/shared/ui/button";
-import { DataframeNamesEnum } from "@/entities/table/model";
+import { DataTableProps, getColumns, PaginationMeta, TableRowData } from "../model";
 
 import './styles.scss';
-
-type DataTableProps = {
-  dfName: DataframeNamesEnum;
-};
-
-type TableRowData = Record<string, string>;
-
-type PaginationMeta = {
-  n: number;
-  pg: number;
-  rows: number;
-  pages: number;
-};
 
 const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName }) => {
   const tableStore = TableModel.tableStore;
@@ -54,17 +41,8 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
   };
 
   useEffect(() => {
-    fetchTable(meta.pg, meta.n);
-  }, []);
-
-  const getColumns = (data: TableRowData[]) => {
-    if (data.length === 0) return [];
-    const firstRow = data[0];
-    return Object.keys(firstRow).map((key) => ({
-      accessorKey: key,
-      header: key,
-    }));
-  };
+    fetchTable(meta.pg || 0, meta.n || 18);
+  }, [dfName, meta.pg, meta.n]);
 
   const columns = getColumns(data);
 
@@ -79,118 +57,120 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
 
   const handlePreviousPage = () => {
     if (table.getCanPreviousPage()) {
-      const newPage = meta.pg - 1;
-      fetchTable(newPage, meta.n);
+      const newPage = (meta.pg || 0) - 1;
+      fetchTable(newPage, meta.n || 18);
     }
   };
   
   const handleNextPage = () => {
     if (table.getCanNextPage()) {
-      const newPage = meta.pg + 1;
-      fetchTable(newPage, meta.n);
+      const newPage = (meta.pg || 0) + 1;
+      fetchTable(newPage, meta.n || 18);
     }
   };
   
   const handleLastPage = () => {
     if (table.getCanNextPage()) {
-      const newPage = meta.pages - 1;
-      fetchTable(newPage, meta.n);
+      const newPage = (meta.pages || 0) - 1;
+      fetchTable(newPage, meta.n || 18);
     }
   };
 
   const handleFirstPage = () => {
     if (table.getCanPreviousPage()) {
       const newPage = 0;
-      fetchTable(newPage, meta.n);
+      fetchTable(newPage, meta.n || 18);
     }
   };
 
+  if (tableStore.loading.item) {
+    return (
+      <div className="data-table__fallback">
+        <IconLoadingCircle className="text-primary" width={48} height={48} />
+      </div>
+    )
+  }
+
   return (
     <>
-      {tableStore.loading.item ? (
-        <div className="data-table__fallback">
-          <IconLoadingCircle className="text-primary" width={48} height={48} />
-        </div>
-      ) : (
-        <div className="data-table">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
-                    </TableHead>
+      <div className="data-table">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() ? "selected" : undefined}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
                   ))}
                 </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() ? "selected" : undefined}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
-                    Данные отсутствуют
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-          <div className="data-table__pagination pagination">
-            <div className="pagination__left">
-                <span>
-                    cтр. {table.getState().pagination.pageIndex + 1} из {table.getPageCount()}
-                </span>
-            </div>
-            <div className="pagination__right">
-                <Button
-                    onClick={() => handleFirstPage()}
-                    disabled={!table.getCanPreviousPage()}
-                    size={'icon'}
-                    variant={'secondary'}
-                >
-                    {'<<'}
-                </Button>
-                <Button
-                    onClick={() => handlePreviousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                    variant={'secondary'}
-                >
-                    Пред.
-                </Button>
-                <Button
-                    onClick={() => handleNextPage()}
-                    disabled={!table.getCanNextPage()}
-                    variant={'secondary'}
-                >
-                    След.
-                </Button>
-                <Button
-                    onClick={() => handleLastPage()}
-                    disabled={!table.getCanNextPage()}
-                    variant={'secondary'}
-                    size={'icon'}
-                >
-                    {'>>'}
-                </Button>
-            </div>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  Данные отсутствуют
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+        <div className="data-table__pagination pagination">
+          <div className="pagination__left">
+              <span>
+                  cтр. {table.getState().pagination.pageIndex + 1} из {table.getPageCount()}
+              </span>
+          </div>
+          <div className="pagination__right">
+              <Button
+                  onClick={() => handleFirstPage()}
+                  disabled={!table.getCanPreviousPage()}
+                  size={'icon'}
+                  variant={'secondary'}
+              >
+                  {'<<'}
+              </Button>
+              <Button
+                  onClick={() => handlePreviousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                  variant={'secondary'}
+              >
+                  Пред.
+              </Button>
+              <Button
+                  onClick={() => handleNextPage()}
+                  disabled={!table.getCanNextPage()}
+                  variant={'secondary'}
+              >
+                  След.
+              </Button>
+              <Button
+                  onClick={() => handleLastPage()}
+                  disabled={!table.getCanNextPage()}
+                  variant={'secondary'}
+                  size={'icon'}
+              >
+                  {'>>'}
+              </Button>
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 });

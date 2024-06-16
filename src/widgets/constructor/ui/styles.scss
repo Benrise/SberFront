@@ -1,0 +1,40 @@
+.configurations {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+
+    &__item {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+        border-radius: 12px;
+        border: 1px solid hsl(var(--background));
+    }
+
+    &__block {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    &__label {
+        @include callout()
+    }
+
+    &__function {
+        @include callout(12);
+        color: hsl(var(--muted-foreground));
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        padding: 3px;
+        background-color: hsl(var(--secondary));
+        border: 1px solid hsl(var(--border));
+        border-radius: 4px;
+        width: 48px;
+        justify-content: center;
+        margin-right: 8px;
+    }
+}

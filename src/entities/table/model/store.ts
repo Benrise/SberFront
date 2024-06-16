@@ -1,10 +1,14 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { http } from '../api';
-import { BaseDto, IBaseListParams } from '@/shared/api/types';
+import { BaseDto, IBaseListParams, IBaseListResponse } from '@/shared/api/types';
 import { StatusCodes } from 'http-status-codes';
 
 export class TableStore {
 
+  tableData: IBaseListResponse<Record<string, string>>  = {
+    data: [],
+    meta: {}
+  }
   bills: BaseDto[] = [];
   loading = {
     list: false,
@@ -88,6 +92,9 @@ export class TableStore {
     this.setLoading('item', true);
     try {
       const response = await http.table.get_table(dfName, params);
+      runInAction(() => {
+        this.tableData = response.data
+      })
       if (response.status === StatusCodes.OK) {
         return response.data
       }
@@ -100,6 +107,7 @@ export class TableStore {
   }
 
   setLoading(operation: keyof typeof this.loading, state: boolean) {
+    if (state === this.loading[operation]) return;
     runInAction(() => {
       this.loading[operation] = state;
     });

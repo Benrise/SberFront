@@ -34,7 +34,7 @@ export class TableRepository {
             df_name: df_name,
             ...params,
         }
-        return this.axiosInstance.get(`${this.endpoint}/get_table`, { params: paramsObj });
+        return this.axiosInstance.get<IBaseListResponse<Record<string, string>>>(`${this.endpoint}/get_table`, { params: paramsObj });
     }
 
     async delete_table(file_name: string, df_name?: string) {
