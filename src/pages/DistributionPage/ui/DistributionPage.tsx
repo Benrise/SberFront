@@ -19,6 +19,10 @@ import { observer } from "mobx-react-lite"
 import './styles.scss'
 import { useToast } from "@/shared/ui/use-toast"
 
+import { ApexChart } from '@/features/chart/radar'
+import { BubbleChart } from '@/features/chart/bubble' 
+import { CandlestickChart } from "@/features/chart/candle"
+
 
 export const DistributionPage = observer(() => {
     const navigate = useNavigate();
@@ -83,7 +87,21 @@ export const DistributionPage = observer(() => {
                     Обновить
                 </Button>
             ],
-            body: <div>Распределение</div>
+            body: (
+                <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+                  <div style={{ display: 'flex', height: '50%' }}>
+                    <div style={{ width: '50%' }}>
+                      <ApexChart />
+                    </div>
+                    <div style={{ width: '50%' }}>
+                      <BubbleChart />
+                    </div>
+                  </div>
+                  <div style={{ height: '50%' }}>
+                    <CandlestickChart />
+                  </div>
+                </div>
+              )
         }
     }
 
