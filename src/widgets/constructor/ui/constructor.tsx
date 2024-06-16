@@ -30,9 +30,7 @@ import { Input } from "@/shared/ui/input"
 import {
     Form,
     FormControl,
-    FormField,
     FormItem,
-    FormLabel,
     FormMessage,
 } from "@/shared/ui/form"
 
@@ -43,12 +41,11 @@ import './styles.scss'
 import { observer } from "mobx-react-lite"
 import { TableModel } from "@/entities/table"
 import { getColumns } from "@/features/datatable/model"
-import { ConfigurationDto, HistoryDto } from "../model/types"
-import { BaseDto } from '@/shared/api/types';
 import { DataframeNamesEnum } from '@/entities/table/model';
 
 import { useToast } from "@/shared/ui/use-toast";
-import { reaction } from 'mobx';
+
+import IconXmark from '~icons/f7/xmark?width=16px&height=16px';
 
 const functionsList = [
     { label: 'Значение', value: 'VAL',  _value: 'value' },
@@ -88,6 +85,12 @@ export const Constructor: React.FC = observer(() => {
         } else {
             newFunctions[index] = `${newFunctions[index]},${value}`;
         }
+        setFunctions(newFunctions);
+    };
+
+    const handleRemoveFunction = (configIndex: number, funcIndex: number) => {
+        const newFunctions = [...functions];
+        newFunctions[configIndex] = newFunctions[configIndex].split(',').filter((_, index) => index !== funcIndex).join(',');
         setFunctions(newFunctions);
     };
 
@@ -170,7 +173,7 @@ export const Constructor: React.FC = observer(() => {
                                                             render={({ field }) => (
                                                                 <FormItem>
                                                                     <FormControl>
-                                                                        <Input className='pl-14' placeholder={functionsList.find((item) => item._value === func)?.label} {...field} />
+                                                                            <Input className='pl-14' placeholder={functionsList.find((item) => item._value === func)?.label} {...field} />
                                                                     </FormControl>
                                                                 </FormItem>
                                                             )}
@@ -180,6 +183,9 @@ export const Constructor: React.FC = observer(() => {
                                                                 {functionsList.find((item) => item._value === func)?.value}
                                                             </div>
                                                         </span>
+                                                        <Button type={"button"} className="absolute end-0 inset-y-0 flex items-center justify-center px-1" size={"icon"} variant={"ghost"} onClick={() => handleRemoveFunction(configIndex, funcIndex)}>
+                                                            <IconXmark/>
+                                                        </Button>
                                                     </div>
                                                 ))}
                                                 </div>
@@ -191,16 +197,17 @@ export const Constructor: React.FC = observer(() => {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent>
-                                                    {functionsList.map((item) => (
-                                                        <DropdownMenuItem
-                                                            key={item.value}
-                                                            onSelect={() => handleAddFunction(configIndex, item._value)}
-                                                        >
-                                                            <span className="configurations__function">
-                                                                {item.value}
-                                                            </span>
-                                                            {item.label}
-                                                        </DropdownMenuItem>
+                                                    {functionsList.filter((item) => !functions[configIndex] || !functions[configIndex].includes(item._value))
+                                                        .map((item) => (
+                                                            <DropdownMenuItem
+                                                                key={item.value}
+                                                                onSelect={() => handleAddFunction(configIndex, item._value)}
+                                                            >
+                                                                <span className="configurations__function">
+                                                                    {item.value}
+                                                                </span>
+                                                                {item.label}
+                                                            </DropdownMenuItem>
                                                     ))}
                                                 </DropdownMenuContent>
                                             </DropdownMenu>

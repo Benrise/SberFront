@@ -92,7 +92,10 @@ export class TableStore {
     }
   }
 
-  async getTable(dfName?: DataframeNamesEnum, params?: IBaseListParams) {
+  async getTable(dfName?: DataframeNamesEnum, params: IBaseListParams = {
+    pg: 0,
+    n: 18
+  }) {
     this.setLoading('item', true);
     try {
       let response = await http.table.get_table(dfName, params);
@@ -135,12 +138,12 @@ export class TableStore {
     try {
       const response = await http.table.filter(dfName, params);
       if (response.status === StatusCodes.OK) {
+        runInAction(() => {
+          this.getTable(DataframeNamesEnum.FILTER);
+        })
         if (response.data.message) {
           return response.data.message
         }
-        runInAction(() => {
-          this.getTable(DataframeNamesEnum.BILLS_EDIT)
-        })
       }
     }
     catch (error: any) {

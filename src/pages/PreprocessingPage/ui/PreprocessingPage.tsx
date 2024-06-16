@@ -10,8 +10,9 @@ import { Constructor } from "@/widgets/constructor"
 import IconRefresh from '~icons/flowbite/refresh-outline';
 
 import "./styles.scss"
+import { observer } from "mobx-react"
 
-export const PreprocessingPage = () => {
+export const PreprocessingPage = observer(() => {
     const tableStore = TableModel.tableStore;
 
     const startPreload = async () => {
@@ -33,7 +34,10 @@ export const PreprocessingPage = () => {
                 description: "Список объектов предобработки"
             },
             toolbarButtons: [
-                <Button onClick={() => refreshTable()} variant={'secondary'} size={'icon'}><IconRefresh/></Button>
+                <Button disabled={tableStore.loading.item} onClick={() => refreshTable()} variant={'secondary'}>
+                    <IconRefresh className={'mr-2' + (tableStore.loading.item ? ' animate-spin' : '')}/>
+                    Обновить
+                </Button>
             ],
             body: <DataTable dfName={DataframeNamesEnum.BILLS} />
         },
@@ -55,4 +59,4 @@ export const PreprocessingPage = () => {
             </div>
         </div>
     )
-}
+})
