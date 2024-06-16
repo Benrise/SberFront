@@ -78,14 +78,24 @@ export const DistributionPage = observer(() => {
     const contentProps: ContentProps = {
         mainPanel: {
             text: {
-                title: id ? 'Распределение' : 'Последнее расчитанное распределение',
+                title: id ? 'Распределение' : 'Последнее расчитанное распределение' + (item?.config_id),
                 description: item?.create_at ?  "От " + format(item?.create_at) : ''
             },
             toolbarButtons: [
-                <Button disabled={tableStore.loading.item} onClick={() => fetchItem(id)} variant={'secondary'}>
+                <Button key={1} disabled={tableStore.loading.item} onClick={() => fetchItem(id)} variant={'secondary'}>
                     <IconRefresh className={'mr-2' + (tableStore.loading.item ? ' animate-spin' : '')}/>
                     Обновить
-                </Button>
+                </Button>,
+                item?.data?.result?.link_1 && (
+                    <a key={2} href={item.data.result.link_1}>
+                    <Button variant="secondary">Скачать целевое изображение</Button>
+                    </a>
+                ),
+                item?.data?.result?.link_2 && (
+                    <a key={3} href={item.data.result.link_2}>
+                    <Button variant="secondary">Отчет</Button>
+                    </a>
+                ),
             ],
             body: (
                 <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>

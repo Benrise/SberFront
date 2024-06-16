@@ -17,4 +17,12 @@ export class DistributionDto {
     distribution_task_id?: string;
     status?: DistributionStatusEnum;
     state?: DistributionStatusEnum;
+    data?: {
+        id?: string
+        user_name?: string
+        result: {
+            link_1?: string
+            link_2?: string
+        }
+    }
 }
