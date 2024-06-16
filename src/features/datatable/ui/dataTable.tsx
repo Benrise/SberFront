@@ -19,7 +19,11 @@ import { DataTableProps, TableRowData } from "../model";
 
 import './styles.scss';
 
-const getColumns = (data: TableRowData[]) => {
+const getColumns = (data: TableRowData[]): { 
+    accessorKey: string; 
+    header: string; 
+    cell: (info: { getValue: () => string }) => JSX.Element;
+  }[] => {
     if (!data || data.length === 0) {
       return [];
     };
@@ -27,6 +31,7 @@ const getColumns = (data: TableRowData[]) => {
     return Object.keys(firstRow).map((key) => ({
       accessorKey: key,
       header: key,
+      cell: (info) => <div className="data-table__cell">{info.getValue()}</div>,
     }));
   };
 const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName }) => {
@@ -110,7 +115,7 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows?.length && !tableStore.loading.item ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
