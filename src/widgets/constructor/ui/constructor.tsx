@@ -17,10 +17,11 @@ import {
 } from "@/shared/ui/select"
 
 import { Button } from "@/shared/ui/button"
-import { useState } from "react"
-import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu"
+import { useEffect, useState } from "react"
 
 import IconPlus from '~icons/lucide/plus';
+import IconLoadingCircle from '~icons/eos-icons/bubble-loading';
+import IconRefresh from '~icons/flowbite/refresh-outline';
 
 import { useForm, useFieldArray, Controller, SubmitHandler } from 'react-hook-form';
 
@@ -42,9 +43,8 @@ import './styles.scss'
 import { observer } from "mobx-react-lite"
 import { TableModel } from "@/entities/table"
 import { getColumns } from "@/features/datatable/model"
-import { ConfigurationDto } from "../model/types"
-
-type Checked = DropdownMenuCheckboxItemProps["checked"]
+import { ConfigurationDto, HistoryDto } from "../model/types"
+import { BaseDto } from '@/shared/api/types';
 
 const functionsList = [
     { label: 'Значение', value: 'VAL',  _value: 'value' },
@@ -71,6 +71,7 @@ const functionsList = [
 export const Constructor: React.FC = observer(() => {
     const [functions, setFunctions] = useState<string[]>([]);
     const [configurations, setConfigurations] = useState<ConfigurationDto[]>([]);
+    const [activeTab, setActiveTab] = useState<string>('configurations');
     const tableStore = TableModel.tableStore;
     
     const columns = getColumns(tableStore.tableData.data);
@@ -108,7 +109,7 @@ export const Constructor: React.FC = observer(() => {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col justify-between h-full">
-                <Tabs className="flex flex-col gap-2" defaultValue="configuration">
+                <Tabs className="flex flex-col gap-2 h-full" defaultValue="configuration" onValueChange={setActiveTab}>
                     <TabsList className="w-full">
                         <TabsTrigger className="w-full" value="configuration">Операции</TabsTrigger>
                         <TabsTrigger className="w-full" value="history">История</TabsTrigger>
@@ -201,13 +202,54 @@ export const Constructor: React.FC = observer(() => {
                             <Button variant="secondary" onClick={handleAddConfiguration}>Добавить операцию</Button>
                         </div>
                     </TabsContent>
-                    <TabsContent value="history">История</TabsContent>
+                    <TabsContent value="history" className='h-full'>
+                        <div className="h-full">
+                            <Button disabled={tableStore.loading.list}  onClick={() => tableStore.history()} className="w-full border-border text-foreground" variant={"outline"}>
+                                <IconRefresh className={'mr-2' + (tableStore.loading.list ? ' animate-spin' : '')}/> 
+                                Обновить
+                            </Button>
+                            <HistoryList />
+                        </div>  
+                    </TabsContent>
                 </Tabs>
-                <div className="flex flex-row gap-2">
-                    <Button className="w-full" variant={"secondary"}>Сбросить</Button>
-                    <Button type="submit" className="w-full" variant={"outline"}>Применить</Button>
-                </div>
+                {activeTab === 'configuration' && (
+                    <div className="flex flex-row gap-2">
+                        <Button className="w-full" variant={"secondary"}>Сбросить</Button>
+                        <Button type="submit" className="w-full" variant={"outline"}>Применить</Button>
+                    </div>
+                )}
             </form>
         </Form>
     )
 })
+
+export const HistoryList: React.FunctionComponent = observer(() => {
+    const tableStore = TableModel.tableStore;
+
+    useEffect(() => {
+        tableStore.history();
+    }, [tableStore]);
+
+    return (
+        <div className="history-list">
+            {tableStore.loading.list ? (
+                <div className="history-list__fallback">
+                    <IconLoadingCircle className="text-primary" width={36} height={36}/>
+                </div>
+            ) : tableStore.histories.length === 0 ? (
+                <div className="history-list__fallback">
+                    <img className="w-[128px] opacity-90" src="/images/png/empty-box.png" alt="Empty List" />
+                    <div>Список расчетов распределений пуст</div>
+                </div>
+            ) : (
+                <div className="history-list__items">
+                    {tableStore.histories.map((history, index) => (
+                        <div key={index} className="history-list__item">
+                            {'Распределение от' + history.create_at}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+});

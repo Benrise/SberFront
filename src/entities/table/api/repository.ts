@@ -44,4 +44,8 @@ export class TableRepository {
         }
         return this.axiosInstance.delete(`${this.endpoint}/delete_table`, { params: params });
     }
+
+    async history() {
+        return this.axiosInstance.get(`${this.endpoint}/history`);
+    }
 }

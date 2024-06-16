@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { http } from '../api';
 import { BaseDto, IBaseListParams, IBaseListResponse } from '@/shared/api/types';
 import { StatusCodes } from 'http-status-codes';
+import { ConfigurationDto, HistoryDto } from '@/widgets/constructor/model/types';
 
 export class TableStore {
 
@@ -10,6 +11,8 @@ export class TableStore {
     meta: {}
   }
   bills: BaseDto[] = [];
+  histories: HistoryDto[] = [];
+  configuration: ConfigurationDto = {};
   loading = {
     list: false,
     item: false,
@@ -103,6 +106,23 @@ export class TableStore {
     }
     finally {
       this.setLoading('item', false);
+    }
+  }
+
+  async history() {
+    this.setLoading('list', true);
+    try {
+      const response = await http.table.history();
+      if (response.status === StatusCodes.OK) {
+        runInAction(() => {
+          this.histories = response.data
+        })
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+    finally {
+      this.setLoading('list', false);
     }
   }
 
