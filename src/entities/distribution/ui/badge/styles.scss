@@ -1,0 +1,19 @@
+.distribution-badge {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    &__text {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 100%;
+        @include body($font-weight: 500);
+    }
+
+    &__actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+}

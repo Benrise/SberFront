@@ -1,7 +1,6 @@
 import { TableModel } from "@/entities/table";
 import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import { observer } from "mobx-react-lite";
-import { computed } from "mobx";
 import { useEffect } from "react";
 
 import {

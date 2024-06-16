@@ -1,5 +1,5 @@
 import { IBaseListParams, IBaseListResponse } from '@/shared/api/types';
-import { ConfigurationDto } from '@/widgets/constructor/model/types';
+import { ConfigurationDto, ConfigurationFormValues } from '@/widgets/constructor/model/types';
 import type { AxiosInstance, AxiosResponse } from 'axios';
 
 const fileRequestConfig: AxiosRequestConfig = {
@@ -46,7 +46,7 @@ export class TableRepository {
         return this.axiosInstance.delete(`${this.endpoint}/delete_table`, { params: params });
     }
 
-    async filter(df_name?:string, payload?: ConfigurationDto[]) {
+    async filter(df_name?:string, payload?: ConfigurationFormValues) {
         const params = {
             df_name: df_name,
         }

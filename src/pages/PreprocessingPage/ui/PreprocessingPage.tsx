@@ -11,9 +11,11 @@ import IconRefresh from '~icons/flowbite/refresh-outline';
 
 import "./styles.scss"
 import { observer } from "mobx-react"
+import { DistributionModel } from "@/entities/distribution"
 
 export const PreprocessingPage = observer(() => {
     const tableStore = TableModel.tableStore;
+    const distributionStore = DistributionModel.distributionStore;
 
     const startPreload = async () => {
         await tableStore.preloadTable();
@@ -22,6 +24,10 @@ export const PreprocessingPage = observer(() => {
     const refreshTable = async () => {
         await tableStore.getTable(DataframeNamesEnum.FILTER);
     };
+
+    const startDistribution = async () => {
+        distributionStore.start(tableStore.configurations);
+    }
 
     useEffect(() => {
         startPreload();
@@ -42,7 +48,7 @@ export const PreprocessingPage = observer(() => {
             body: <DataTable dfName={DataframeNamesEnum.BILLS} />
         },
         additionalPanel: {
-            extraAction: <Button>Произвести отчёт</Button>,
+            extraAction: <Button onClick={() => startDistribution()}>Произвести отчёт</Button>,
             body: <Constructor/>
         },
         reversed: true

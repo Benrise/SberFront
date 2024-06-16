@@ -2,8 +2,9 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { http } from '../api';
 import { BaseDto, IBaseListParams, IBaseListResponse } from '@/shared/api/types';
 import { StatusCodes } from 'http-status-codes';
-import { ConfigurationDto, HistoryDto } from '@/widgets/constructor/model/types';
+import { ConfigurationDto, ConfigurationFormValues } from '@/widgets/constructor/model/types';
 import { DataframeNamesEnum } from './types';
+import { DistributionDto } from '@/entities/distribution/model';
 
 export class TableStore {
 
@@ -12,8 +13,8 @@ export class TableStore {
     meta: {}
   }
   bills: BaseDto[] = [];
-  histories: HistoryDto[] = [];
-  configuration: ConfigurationDto = {};
+  distributions: DistributionDto[] = [];
+  configurations?: ConfigurationDto[] 
   loading = {
     list: false,
     item: false,
@@ -40,6 +41,12 @@ export class TableStore {
     finally {
       this.setLoading('list', false);
     }
+  }
+
+  async setConfigurations(configurations: ConfigurationDto[]) {
+    runInAction(() => {
+      this.configurations = configurations
+    });
   }
 
   async preloadTable(dfName?: string) {
@@ -123,7 +130,7 @@ export class TableStore {
       const response = await http.table.history();
       if (response.status === StatusCodes.OK) {
         runInAction(() => {
-          this.histories = response.data
+          this.distributions = response.data
         })
       }
     } catch (error: any) {
@@ -134,7 +141,7 @@ export class TableStore {
     }
   }
 
-  async filter(dfName?: string, params?: ConfigurationDto[]){
+  async filter(dfName?: string, params?: ConfigurationFormValues){
     this.setLoading('filter', true);
     try {
       const response = await http.table.filter(dfName, params);

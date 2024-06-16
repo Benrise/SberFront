@@ -20,7 +20,6 @@ import { Button } from "@/shared/ui/button"
 import { useEffect, useState } from "react"
 
 import IconPlus from '~icons/lucide/plus';
-import IconLoadingCircle from '~icons/eos-icons/bubble-loading';
 import IconRefresh from '~icons/flowbite/refresh-outline';
 
 import { useForm, useFieldArray, Controller, SubmitHandler } from 'react-hook-form';
@@ -48,6 +47,7 @@ import IconXmark from '~icons/f7/xmark?width=16px&height=16px';
 
 import { ConfigurationFormValues } from '../model/types';
 import { getColumns } from '@/features/datatable';
+import { DistributionList } from '@/widgets/distribution/list';
 
 const functionsList = [
     { label: 'Значение', value: 'VAL',  _value: 'value' },
@@ -116,8 +116,9 @@ export const Constructor: React.FC = observer(() => {
         name: 'configurations',
     });
 
-    const onSubmit: SubmitHandler<any> = async (data) => {
+    const onSubmit: SubmitHandler<any> = async (data: ConfigurationFormValues) => {
         const message = await tableStore.filter(DataframeNamesEnum.BILLS_EDIT, data);
+        tableStore.setConfigurations(data.configurations);
         toast({
             title: 'Процесс в обработке',
             description: message,
@@ -234,12 +235,12 @@ export const Constructor: React.FC = observer(() => {
                         </div>
                     </TabsContent>
                     <TabsContent value="history" className='h-full'>
-                        <div className="h-full">
+                        <div className="h-full flex flex-col gap-4">
                             <Button disabled={tableStore.loading.list}  onClick={() => tableStore.history()} className="w-full border-border text-foreground" variant={"outline"}>
                                 <IconRefresh className={'mr-2' + (tableStore.loading.list ? ' animate-spin' : '')}/> 
                                 Обновить
                             </Button>
-                            <HistoryList />
+                            <DistributionList />
                         </div>  
                     </TabsContent>
                 </Tabs>
@@ -253,34 +254,3 @@ export const Constructor: React.FC = observer(() => {
         </Form>
     )
 })
-
-export const HistoryList: React.FunctionComponent = observer(() => {
-    const tableStore = TableModel.tableStore;
-
-    useEffect(() => {
-        tableStore.history();
-    }, [tableStore]);
-
-    return (
-        <div className="history-list">
-            {tableStore.loading.list ? (
-                <div className="history-list__fallback">
-                    <IconLoadingCircle className="text-primary" width={36} height={36}/>
-                </div>
-            ) : tableStore.histories.length === 0 ? (
-                <div className="history-list__fallback">
-                    <img className="w-[128px] opacity-90" src="/images/png/empty-box.png" alt="Empty List" />
-                    <div>Список расчетов распределений пуст</div>
-                </div>
-            ) : (
-                <div className="history-list__items">
-                    {tableStore.histories.map((history, index) => (
-                        <div key={index} className="history-list__item">
-                            {'Распределение от' + history.create_at}
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-});

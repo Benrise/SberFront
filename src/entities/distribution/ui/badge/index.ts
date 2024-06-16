@@ -1,0 +1,1 @@
+export { DistributionBadge } from './distributionBadge';
