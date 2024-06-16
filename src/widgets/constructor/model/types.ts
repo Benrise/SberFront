@@ -1,9 +1,16 @@
-export class ConfigurationDto {
-    key?: string;
+export class OperationDto {
+    value?: string;
     filter?: string;
     expression?: string;
-    value?: string;
-    sub?: ConfigurationDto[];
+}
+
+export class ConfigurationDto {
+    column?: string;
+    operations?: OperationDto[];
+}
+
+export interface ConfigurationFormValues {
+    configurations: ConfigurationDto[];
 }
 
 export class HistoryDto {

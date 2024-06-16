@@ -47,27 +47,28 @@ import { useToast } from "@/shared/ui/use-toast";
 
 import IconXmark from '~icons/f7/xmark?width=16px&height=16px';
 
+import { ConfigurationFormValues } from '../model/types';
+
 const functionsList = [
     { label: 'Значение', value: 'VAL',  _value: 'value' },
     { label: 'Фильтр', value: 'FILTER',  _value: 'filter' },
     { label: 'Выражение', value: 'EXP',  _value: 'expression' },
-    // { label: 'Доп. операция', value: 'SUB' },
   ];
 
-  const schema = yup.object().shape({
-    configurations: yup.array().of(
-        yup.object().shape({
-            column: yup.string().required('Выбор столбца обязателен'),
-            operations: yup.array().of(
-                yup.object().shape({
-                    value: yup.string(),
-                    filter: yup.string(),
-                    expression: yup.string(),
-                })
-            ),
-        })
-    ),
-});
+  const schema: yup.ObjectSchema<ConfigurationFormValues> = yup.object().shape({
+        configurations: yup.array().of(
+            yup.object().shape({
+                column: yup.string().required('Выбор столбца обязателен'),
+                operations: yup.array().of(
+                    yup.object().shape({
+                        value: yup.string(),
+                        filter: yup.string(),
+                        expression: yup.string(),
+                    })
+                ).required().min(1),
+            })
+        ).required().min(1),
+    });
 
 export const Constructor: React.FC = observer(() => {
     const [functions, setFunctions] = useState<string[]>([]);
@@ -103,7 +104,7 @@ export const Constructor: React.FC = observer(() => {
         append({ column: '', operations: [] });
     };
 
-    const form = useForm({
+    const form = useForm<ConfigurationFormValues>({
         resolver: yupResolver(schema),
         defaultValues: {
             configurations: [],
@@ -138,7 +139,7 @@ export const Constructor: React.FC = observer(() => {
                             <div className="configurations">
                                 {fields.map((field, configIndex) => (
                                     <div className="configurations__item" key={field.id}>
-                                        <Button type={"button"} className="absolute end-0 inset-y-0 flex items-center justify-center px-1" size={"icon"} variant={"ghost"} onClick={() => handleRemoveConfiguration(configIndex, configIndex)}>
+                                        <Button type={"button"} className="absolute end-0 inset-y-0 flex items-center justify-center px-1" size={"icon"} variant={"ghost"} onClick={() => handleRemoveConfiguration(configIndex)}>
                                             <IconXmark/>
                                         </Button>
                                         <div className="configurations__block">
@@ -147,11 +148,11 @@ export const Constructor: React.FC = observer(() => {
                                             </div>
                                             <Controller
                                                 control={form.control}
-                                                name={`configurations[${configIndex}].column`}
+                                                name={`configurations.${configIndex}.column`}
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Select disabled={columns.length === 0 || tableStore.loading.filter} defaultValue={field.value} onValueChange={field.onChange}>
+                                                            <Select disabled={columns.length === 0 || tableStore.loading.filter} defaultValue={field.value || ''} onValueChange={field.onChange}>
                                                                 <SelectTrigger className="bg-secondary">
                                                                     <SelectValue placeholder="Выбрать" />
                                                                 </SelectTrigger>
@@ -179,11 +180,15 @@ export const Constructor: React.FC = observer(() => {
                                                     <div key={funcIndex} className="relative w-full max-w-sm items-center">
                                                         <Controller
                                                             control={form.control}
-                                                            name={`configurations[${configIndex}].operations[${funcIndex}].${func}`}
+                                                            name={`configurations.${configIndex}.operations.${funcIndex}.value`}
                                                             render={({ field }) => (
                                                                 <FormItem>
                                                                     <FormControl>
-                                                                            <Input className='pl-14' placeholder={functionsList.find((item) => item._value === func)?.label} {...field} />
+                                                                        <Input 
+                                                                           className={'pl-14'} 
+                                                                           placeholder={functionsList.find((item) => item._value === func)?.label} 
+                                                                           {...field}
+                                                                        />
                                                                     </FormControl>
                                                                 </FormItem>
                                                             )}
