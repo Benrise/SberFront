@@ -1,6 +1,7 @@
 import { TableModel } from "@/entities/table";
 import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import { observer } from "mobx-react-lite";
+import { computed } from "mobx";
 import { useEffect } from "react";
 
 import {
@@ -37,6 +38,11 @@ const getColumns = (data: TableRowData[]): {
 const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName }) => {
   const tableStore = TableModel.tableStore;
 
+  const data = tableStore.tableData.data
+  const meta = tableStore.tableData.meta
+  const loading = tableStore.loading
+
+
   const fetchTable = async (page: number, pageSize: number) => {
     try {
       const params = { pg: page, n: pageSize };
@@ -53,43 +59,49 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
   const columns = getColumns(tableStore.tableData.data);
 
   const table = useReactTable<TableRowData>({
-    data: tableStore.tableData.data,
+    data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
-    pageCount: tableStore.tableData.meta?.pages || 0,
-    rowCount: tableStore.tableData.meta?.rows || 0,
+    pageCount: meta.pages,
+    rowCount: meta.rows,
+    state: {
+      pagination: {
+        pageIndex: meta.pg || 0,
+        pageSize: meta.n || 15,
+      },
+    }
   });
 
   const handlePreviousPage = () => {
     if (table.getCanPreviousPage()) {
-      const newPage = (tableStore.tableData.meta.pg || 0) - 1;
-      fetchTable(newPage, (tableStore.tableData.meta.n || 5) as number);
+      const newPage = (meta.pg || 0)   - 1;
+      fetchTable(newPage, (meta.n || 15));
     }
   };
   
   const handleNextPage = () => {
     if (table.getCanNextPage()) {
-      const newPage = (tableStore.tableData.meta.pg || 0) + 1;
-      fetchTable(newPage, (tableStore.tableData.meta.n || 15) as number);
+      const newPage = (meta.pg || 0) + 1;
+      fetchTable(newPage, (meta.n || 15));
     }
   };
   
   const handleLastPage = () => {
     if (table.getCanNextPage()) {
-      const newPage = (tableStore.tableData.meta.pages || 0) - 1;
-      fetchTable(newPage, (tableStore.tableData.meta.n || 15) as number);
+      const newPage = ( meta.pg || 0) - 1;
+      fetchTable(newPage, meta.n || 15);
     }
   };
 
   const handleFirstPage = () => {
     if (table.getCanPreviousPage()) {
       const newPage = 0;
-      fetchTable(newPage, (tableStore.tableData.meta.n || 5) as number);
+      fetchTable(newPage, meta.n || 15);
     }
   };
 
-  if (tableStore.loading.item) {
+  if (loading.item) {
     return (
       <div className="data-table__fallback">
         <IconLoadingCircle className="text-primary" width={48} height={48} />
@@ -115,7 +127,7 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length && !tableStore.loading.item ? (
+            {table.getRowModel().rows?.length && !loading.item ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
