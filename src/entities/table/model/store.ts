@@ -95,7 +95,7 @@ export class TableStore {
 
   async getTable(dfName?: DataframeNamesEnum, params: IBaseListParams = {
     pg: 0,
-    n: 18
+    n: 15
   }) {
     this.setLoading('item', true);
     try {

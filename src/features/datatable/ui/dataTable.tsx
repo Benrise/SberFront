@@ -42,7 +42,7 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
   };
 
   useEffect(() => {
-    fetchTable(tableStore.tableData.meta.pg || 0, tableStore.tableData.meta.n || 18);
+    fetchTable(tableStore.tableData.meta.pg || 0, tableStore.tableData.meta.n || 15);
   }, [dfName]);
 
   const columns = getColumns(tableStore.tableData.data);
@@ -59,28 +59,28 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
   const handlePreviousPage = () => {
     if (table.getCanPreviousPage()) {
       const newPage = (tableStore.tableData.meta.pg || 0) - 1;
-      fetchTable(newPage, (tableStore.tableData.meta.n || 18) as number);
+      fetchTable(newPage, (tableStore.tableData.meta.n || 5) as number);
     }
   };
   
   const handleNextPage = () => {
     if (table.getCanNextPage()) {
       const newPage = (tableStore.tableData.meta.pg || 0) + 1;
-      fetchTable(newPage, (tableStore.tableData.meta.n || 18) as number);
+      fetchTable(newPage, (tableStore.tableData.meta.n || 15) as number);
     }
   };
   
   const handleLastPage = () => {
     if (table.getCanNextPage()) {
       const newPage = (tableStore.tableData.meta.pages || 0) - 1;
-      fetchTable(newPage, (tableStore.tableData.meta.n || 18) as number);
+      fetchTable(newPage, (tableStore.tableData.meta.n || 15) as number);
     }
   };
 
   const handleFirstPage = () => {
     if (table.getCanPreviousPage()) {
       const newPage = 0;
-      fetchTable(newPage, (tableStore.tableData.meta.n || 18) as number);
+      fetchTable(newPage, (tableStore.tableData.meta.n || 5) as number);
     }
   };
 
