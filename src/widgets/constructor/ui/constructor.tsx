@@ -104,8 +104,8 @@ export const Constructor: React.FC = observer(() => {
         setFunctions(newFunctions);
     
         const updatedConfigurations = [...form.getValues("configurations")];
-        if (updatedConfigurations[configIndex]?.operations) {
-            updatedConfigurations[configIndex].operations.splice(funcIndex, 1);
+        if (!!updatedConfigurations[configIndex]?.operations) {
+            updatedConfigurations[configIndex].operations!.splice(funcIndex, 1);
             form.setValue("configurations", updatedConfigurations);
         }
         form.setValue("configurations", updatedConfigurations);
@@ -121,6 +121,17 @@ export const Constructor: React.FC = observer(() => {
             configurations: [],
         },
     });
+
+    useEffect(() => {
+        if (tableStore.importedConfigurations.length > 0) {
+            form.reset({
+                configurations: tableStore.importedConfigurations.map(config => ({
+                    column: config.column,
+                }))
+            });
+            tableStore.setImportedConfigurations([]);
+        }
+    }, [tableStore.importedConfigurations, form]);
 
     const { fields, append, remove } = useFieldArray({
         control: form.control,

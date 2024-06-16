@@ -16,6 +16,7 @@ import { Badge } from "@/shared/ui/badge";
 import IconClock from '~icons/mdi/clock-outline';
 import IconCheck from '~icons/icon-park-outline/check-one';
 import IconError from '~icons/mdi/error-outline'
+import { tableStore } from "@/entities/table/model";
 
 export const DistributionBadge: React.FC<DistributionBadgeProps> = ({ item }) => {
     const navigate = useNavigate();
@@ -43,7 +44,7 @@ export const DistributionBadge: React.FC<DistributionBadgeProps> = ({ item }) =>
                 </div>
             </div>
             <div className="distribution-badge__actions">
-                <Button size={'sm'} variant={"secondary"} className="w-full">
+                <Button type={"button"} onClick={() => tableStore.setImportedConfigurations(item.config_data?.configurations || [])} size={'sm'} variant={"secondary"} className="w-full">
                      <IconClipboard className="mr-2"/>
                      Конфигурация
                 </Button>

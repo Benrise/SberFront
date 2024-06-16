@@ -11,6 +11,8 @@ import { useEffect, useState } from "react"
 import { format } from "@formkit/tempo"
 import { DistributionStatusEnum } from "@/entities/distribution/model"
 
+import IconRefresh from '~icons/flowbite/refresh-outline';
+
 import IconLoadingCircle from '~icons/eos-icons/bubble-loading'
 import { observer } from "mobx-react-lite"
 
@@ -49,6 +51,7 @@ export const DistributionPage = observer(() => {
         if (id) {
             try {
                 await distributionStore.get(id);
+                setStatus(DistributionStatusEnum.SUCCESS);
             }
             catch (e) {
                 toast({
@@ -75,6 +78,10 @@ export const DistributionPage = observer(() => {
                 description: item?.create_at ?  "От " + format(item?.create_at) : ''
             },
             toolbarButtons: [
+                <Button disabled={tableStore.loading.item} onClick={() => fetchItem(id)} variant={'secondary'}>
+                    <IconRefresh className={'mr-2' + (tableStore.loading.item ? ' animate-spin' : '')}/>
+                    Обновить
+                </Button>
             ],
             body: <div>Распределение</div>
         }
@@ -89,7 +96,7 @@ export const DistributionPage = observer(() => {
           );
     }
 
-    if (item?.status === DistributionStatusEnum.FAILURE || status === DistributionStatusEnum.FAILURE) {
+    if (item?.status?.toLowerCase() === DistributionStatusEnum.FAILURE || status === DistributionStatusEnum.FAILURE) {
         return (
             <div className="distribution__fallback">
                 <img src='/images/png/rejected.png'/>
@@ -103,7 +110,7 @@ export const DistributionPage = observer(() => {
         )
     }
 
-    if (item?.status === DistributionStatusEnum.PENDING || status === DistributionStatusEnum.PENDING) {
+    if (item?.status?.toLowerCase() === DistributionStatusEnum.PENDING || status === DistributionStatusEnum.PENDING) {
         return (
             <div className="distribution__fallback">
                 <img src='/images/png/fog.png'/>

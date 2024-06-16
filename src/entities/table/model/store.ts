@@ -14,6 +14,7 @@ export class TableStore {
   }
   bills: BaseDto[] = [];
   distributions: DistributionDto[] = [];
+  importedConfigurations: ConfigurationDto[] = [];
   configurations?: ConfigurationDto[] 
   loading = {
     list: false,
@@ -41,6 +42,12 @@ export class TableStore {
     finally {
       this.setLoading('list', false);
     }
+  }
+
+  async setImportedConfigurations(configurations: ConfigurationDto[]) {
+    runInAction(() => {
+      this.importedConfigurations = configurations
+    });
   }
 
   async setConfigurations(configurations: ConfigurationDto[]) {
