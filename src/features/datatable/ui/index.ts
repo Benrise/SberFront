@@ -1,1 +1,1 @@
-export { DataTable } from './dataTable';
+export { DataTable, getColumns } from './dataTable';

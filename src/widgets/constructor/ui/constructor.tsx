@@ -40,7 +40,6 @@ import './styles.scss'
 
 import { observer } from "mobx-react-lite"
 import { TableModel } from "@/entities/table"
-import { getColumns } from "@/features/datatable/model"
 import { DataframeNamesEnum } from '@/entities/table/model';
 
 import { useToast } from "@/shared/ui/use-toast";
@@ -48,6 +47,7 @@ import { useToast } from "@/shared/ui/use-toast";
 import IconXmark from '~icons/f7/xmark?width=16px&height=16px';
 
 import { ConfigurationFormValues } from '../model/types';
+import { getColumns } from '@/features/datatable';
 
 const functionsList = [
     { label: 'Значение', value: 'VAL',  _value: 'value' },

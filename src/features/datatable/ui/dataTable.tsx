@@ -1,7 +1,7 @@
 import { TableModel } from "@/entities/table";
 import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 import {
   Table,
@@ -15,10 +15,20 @@ import {
 import IconLoadingCircle from '~icons/eos-icons/bubble-loading';
 
 import { Button } from "@/shared/ui/button";
-import { DataTableProps, getColumns, PaginationMeta, TableRowData } from "../model";
+import { DataTableProps, TableRowData } from "../model";
 
 import './styles.scss';
 
+const getColumns = (data: TableRowData[]) => {
+    if (!data || data.length === 0) {
+      return [];
+    };
+    const firstRow = data[0];
+    return Object.keys(firstRow).map((key) => ({
+      accessorKey: key,
+      header: key,
+    }));
+  };
 const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName }) => {
   const tableStore = TableModel.tableStore;
 
@@ -166,4 +176,4 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
   );
 });
 
-export { DataTable };
+export { DataTable, getColumns };
