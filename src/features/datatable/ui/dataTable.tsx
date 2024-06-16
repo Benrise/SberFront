@@ -42,8 +42,8 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
-    pageCount: tableStore.tableData.meta.pages,
-    rowCount: tableStore.tableData.meta.rows,
+    pageCount: tableStore.tableData.meta?.pages || 0,
+    rowCount: tableStore.tableData.meta?.rows || 0,
   });
 
   const handlePreviousPage = () => {

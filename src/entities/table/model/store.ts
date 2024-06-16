@@ -100,7 +100,7 @@ export class TableStore {
     this.setLoading('item', true);
     try {
       let response = await http.table.get_table(dfName, params);
-      if (!response.data) {
+      if (!response.data.data) {
         response = await http.table.get_table(DataframeNamesEnum.BILLS, params);
       }
       runInAction(() => {
