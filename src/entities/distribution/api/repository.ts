@@ -14,4 +14,8 @@ export class DistributionRepository {
     async result() {
         return this.axiosInstance.get(`${this.endpoint}/result`);
     }
+
+    async get(id: string) {
+        return this.axiosInstance.get(`${this.endpoint}/${id}`);
+    }
 }

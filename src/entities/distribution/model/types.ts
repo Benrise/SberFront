@@ -4,6 +4,7 @@ export const enum DistributionStatusEnum {
     PENDING = 'PENDING',
     FAILURE = 'FAILURE',
     SUCCESS = 'SUCCESS',
+    EMPTY = 'EMPTY',
 }
 
 export class DistributionDto {
@@ -15,4 +16,6 @@ export class DistributionDto {
     distribution_info?: string;
     config_id?: string;
     distribution_task_id?: string;
+    status?: DistributionStatusEnum;
+    state?: DistributionStatusEnum;
 }

@@ -37,6 +37,7 @@ export const App: FunctionComponent = () => {
           <Route index element={<HomePage />} />
           <Route path="preprocessing" element={<PreprocessingPage />} />
           <Route path="distribution" element={<DistributionPage />} />
+          <Route path="/distribution/:id" element={<DistributionPage />} />
           <Route path="*" element={<HomePage />} />
         </Route>
       </Route>

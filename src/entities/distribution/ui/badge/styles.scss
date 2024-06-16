@@ -2,18 +2,21 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid hsl(var(--border));
 
     &__text {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
         width: 100%;
-        @include body($font-weight: 500);
+        @include callout($font-weight: 500);
     }
 
     &__actions {
         display: flex;
-        flex-direction: column;
-        gap: 12px;
+        flex-direction: row;
+        gap: 6px;
     }
 }

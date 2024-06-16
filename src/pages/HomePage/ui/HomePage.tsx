@@ -24,7 +24,7 @@ export const HomePage = () => {
         mainPanel: {
             text: {
                 title: "Объекты распределения",
-                description: "Список объектов распределения"
+                description: "Все загруженные файлы в систему"
             },
             body: <DataTable dfName={DataframeNamesEnum.BILLS}/>
         },

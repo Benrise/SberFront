@@ -29,6 +29,8 @@ import { Input } from "@/shared/ui/input"
 import {
     Form,
     FormControl,
+    FormDescription,
+    FormField,
     FormItem,
     FormMessage,
 } from "@/shared/ui/form"
@@ -43,9 +45,9 @@ import { DataframeNamesEnum } from '@/entities/table/model';
 
 import { useToast } from "@/shared/ui/use-toast";
 
-import IconXmark from '~icons/f7/xmark?width=16px&height=16px';
+import IconXmark from '~icons/f7/xmark';
 
-import { ConfigurationFormValues } from '../model/types';
+import { ConfigurationFormValues, functionType } from '../model/types';
 import { getColumns } from '@/features/datatable';
 import { DistributionList } from '@/widgets/distribution/list';
 
@@ -54,6 +56,7 @@ const functionsList = [
     { label: 'Фильтр', value: 'FILTER',  _value: 'filter' },
     { label: 'Выражение', value: 'EXP',  _value: 'expression' },
   ];
+
 
   const schema: yup.ObjectSchema<ConfigurationFormValues> = yup.object().shape({
         configurations: yup.array().of(
@@ -96,8 +99,16 @@ export const Constructor: React.FC = observer(() => {
 
     const handleRemoveFunction = (configIndex: number, funcIndex: number) => {
         const newFunctions = [...functions];
-        newFunctions[configIndex] = newFunctions[configIndex].split(',').filter((_, index) => index !== funcIndex).join(',');
+        const updatedFunctions = newFunctions[configIndex].split(',').filter((_, index) => index !== funcIndex).join(',');
+        newFunctions[configIndex] = updatedFunctions;
         setFunctions(newFunctions);
+    
+        const updatedConfigurations = [...form.getValues("configurations")];
+        if (updatedConfigurations[configIndex]?.operations) {
+            updatedConfigurations[configIndex].operations.splice(funcIndex, 1);
+            form.setValue("configurations", updatedConfigurations);
+        }
+        form.setValue("configurations", updatedConfigurations);
     };
 
     const handleAddConfiguration = () => {
@@ -147,29 +158,29 @@ export const Constructor: React.FC = observer(() => {
                                             <div className="configurations__label">
                                                 Столбец
                                             </div>
-                                            <Controller
-                                                control={form.control}
-                                                name={`configurations.${configIndex}.column`}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <Select disabled={columns.length === 0 || tableStore.loading.filter} defaultValue={field.value || ''} onValueChange={field.onChange}>
-                                                                <SelectTrigger className="bg-secondary">
-                                                                    <SelectValue placeholder="Выбрать" />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                    {columns.map((column, index) => (
-                                                                        <SelectItem key={index} value={column.header}>
-                                                                            {column.header}
-                                                                        </SelectItem>
-                                                                    ))}
-                                                                </SelectContent>
-                                                            </Select>
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`configurations.${configIndex}.column`}
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormControl>
+                                                                <Select disabled={columns.length === 0 || tableStore.loading.filter} defaultValue={field.value || ''} onValueChange={field.onChange}>
+                                                                    <SelectTrigger className="bg-secondary">
+                                                                        <SelectValue placeholder="Выбрать" />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent>
+                                                                        {columns.map((column, index) => (
+                                                                            <SelectItem key={index} value={column.header}>
+                                                                                {column.header}
+                                                                            </SelectItem>
+                                                                        ))}
+                                                                    </SelectContent>
+                                                                </Select>
+                                                            </FormControl>
+                                                            <FormMessage/>
+                                                        </FormItem>
+                                                    )}
+                                                />
                                         </div>
                                         <div className="configurations__block">
                                             <div className="configurations__label">
@@ -181,7 +192,7 @@ export const Constructor: React.FC = observer(() => {
                                                     <div key={funcIndex} className="relative w-full max-w-sm items-center">
                                                         <Controller
                                                             control={form.control}
-                                                            name={`configurations.${configIndex}.operations.${funcIndex}.value`}
+                                                            name={`configurations.${configIndex}.operations.${funcIndex}.${func as functionType}`}
                                                             render={({ field }) => (
                                                                 <FormItem>
                                                                     <FormControl>
@@ -206,7 +217,8 @@ export const Constructor: React.FC = observer(() => {
                                                 ))}
                                                 </div>
                                             )}
-                                            <DropdownMenu>
+                                            {functionsList.filter((item) => !functions[configIndex] || !functions[configIndex].includes(item._value)).length > 0 && (
+                                                <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
                                                     <Button variant="secondary" size="icon">
                                                         <IconPlus />
@@ -227,6 +239,7 @@ export const Constructor: React.FC = observer(() => {
                                                     ))}
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
+                                            )}
                                         </div>
                                     </div>
                                 ))}

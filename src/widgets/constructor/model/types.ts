@@ -12,3 +12,5 @@ export class ConfigurationDto {
 export interface ConfigurationFormValues {
     configurations: ConfigurationDto[];
 }
+
+export type functionType = 'value' | 'filter' | 'expression'
