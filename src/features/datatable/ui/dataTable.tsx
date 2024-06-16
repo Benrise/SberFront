@@ -22,64 +22,55 @@ import './styles.scss';
 const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName }) => {
   const tableStore = TableModel.tableStore;
 
-  const [data, setData] = useState<TableRowData[]>([]);
-  const [meta, setMeta] = useState<PaginationMeta>({ n: 18, pg: 0, rows: 0, pages: 0 });
-
   const fetchTable = async (page: number, pageSize: number) => {
     try {
       const params = { pg: page, n: pageSize };
-      const response = await tableStore.getTable(dfName, params);
-
-      if (response?.data) {
-        setData(response.data);
-        setMeta(response.meta);
-        table.setPageIndex(page);
-      }
+      await tableStore.getTable(dfName, params);
     } catch (error) {
       console.error("Error fetching table data:", error);
     }
   };
 
   useEffect(() => {
-    fetchTable(meta.pg || 0, meta.n || 18);
-  }, [dfName, meta.pg, meta.n]);
+    fetchTable(tableStore.tableData.meta.pg || 0, tableStore.tableData.meta.n || 18);
+  }, [dfName]);
 
-  const columns = getColumns(data);
+  const columns = getColumns(tableStore.tableData.data);
 
   const table = useReactTable<TableRowData>({
-    data,
+    data: tableStore.tableData.data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
-    pageCount: meta.pages,
-    rowCount: meta.rows,
+    pageCount: tableStore.tableData.meta.pages,
+    rowCount: tableStore.tableData.meta.rows,
   });
 
   const handlePreviousPage = () => {
     if (table.getCanPreviousPage()) {
-      const newPage = (meta.pg || 0) - 1;
-      fetchTable(newPage, meta.n || 18);
+      const newPage = (tableStore.tableData.meta.pg || 0) - 1;
+      fetchTable(newPage, (tableStore.tableData.meta.n || 18) as number);
     }
   };
   
   const handleNextPage = () => {
     if (table.getCanNextPage()) {
-      const newPage = (meta.pg || 0) + 1;
-      fetchTable(newPage, meta.n || 18);
+      const newPage = (tableStore.tableData.meta.pg || 0) + 1;
+      fetchTable(newPage, (tableStore.tableData.meta.n || 18) as number);
     }
   };
   
   const handleLastPage = () => {
     if (table.getCanNextPage()) {
-      const newPage = (meta.pages || 0) - 1;
-      fetchTable(newPage, meta.n || 18);
+      const newPage = (tableStore.tableData.meta.pages || 0) - 1;
+      fetchTable(newPage, (tableStore.tableData.meta.n || 18) as number);
     }
   };
 
   const handleFirstPage = () => {
     if (table.getCanPreviousPage()) {
       const newPage = 0;
-      fetchTable(newPage, meta.n || 18);
+      fetchTable(newPage, (tableStore.tableData.meta.n || 18) as number);
     }
   };
 
@@ -88,7 +79,7 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
       <div className="data-table__fallback">
         <IconLoadingCircle className="text-primary" width={48} height={48} />
       </div>
-    )
+    );
   }
 
   return (

@@ -45,6 +45,10 @@ import { TableModel } from "@/entities/table"
 import { getColumns } from "@/features/datatable/model"
 import { ConfigurationDto, HistoryDto } from "../model/types"
 import { BaseDto } from '@/shared/api/types';
+import { DataframeNamesEnum } from '@/entities/table/model';
+
+import { useToast } from "@/shared/ui/use-toast";
+import { reaction } from 'mobx';
 
 const functionsList = [
     { label: 'Значение', value: 'VAL',  _value: 'value' },
@@ -70,11 +74,12 @@ const functionsList = [
 
 export const Constructor: React.FC = observer(() => {
     const [functions, setFunctions] = useState<string[]>([]);
-    const [configurations, setConfigurations] = useState<ConfigurationDto[]>([]);
-    const [activeTab, setActiveTab] = useState<string>('configurations');
+    const [activeTab, setActiveTab] = useState<string>('configuration');
     const tableStore = TableModel.tableStore;
-    
+    const { toast } = useToast();
+
     const columns = getColumns(tableStore.tableData.data);
+
 
     const handleAddFunction = (index: number, value: string) => {
         const newFunctions = [...functions];
@@ -102,8 +107,12 @@ export const Constructor: React.FC = observer(() => {
         name: 'configurations',
     });
 
-    const onSubmit: SubmitHandler<any> = data => {
-        console.log(data);
+    const onSubmit: SubmitHandler<any> = async (data) => {
+        const message = await tableStore.filter(DataframeNamesEnum.BILLS_EDIT, data);
+        toast({
+            title: 'Процесс в обработке',
+            description: message,
+        })
     };
 
     return (
@@ -129,7 +138,7 @@ export const Constructor: React.FC = observer(() => {
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Select defaultValue={field.value} onValueChange={field.onChange}>
+                                                            <Select disabled={columns.length === 0 || tableStore.loading.item} defaultValue={field.value} onValueChange={field.onChange}>
                                                                 <SelectTrigger className="bg-secondary">
                                                                     <SelectValue placeholder="Выбрать" />
                                                                 </SelectTrigger>

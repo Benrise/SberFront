@@ -8,7 +8,7 @@ interface HeaderTextBody {
 
 interface PanelConfig {
     text?: HeaderTextBody;
-    toolbarButtons?: React.ReactNode;
+    toolbarButtons?: React.ReactNode[];
     body: React.ReactNode;
     extraAction?: React.ReactNode;
 }
@@ -26,15 +26,15 @@ export const Content: React.FC<ContentProps> = ({ mainPanel, additionalPanel, re
             <div className="content__additional-panel">
                 {additionalPanel.text && (
                     <div className="content__header header">
-                        <div className="header__text">
-                            <div className="header__title">
+                        <div className="content-header__text">
+                            <div className="content-header__title">
                                 {additionalPanel.text.title}
                             </div>
-                            <div className="header__description">
+                            <div className="content-header__description">
                                 {additionalPanel.text.description}
                             </div>
                         </div>
-                        <div className="header__toolbar">
+                        <div className="content-header__toolbar">
                             {mainPanel.toolbarButtons}
                         </div>
                     </div>
@@ -47,16 +47,16 @@ export const Content: React.FC<ContentProps> = ({ mainPanel, additionalPanel, re
         </div>
          <div className="content__main-panel">
             {mainPanel.text && (
-                <div className="content__header header">
-                    <div className="header__text">
-                        <div className="header__title">
+                <div className="content__header content-header">
+                    <div className="content-header__text">
+                        <div className="content-header__title">
                             {mainPanel.text.title}
                         </div>
-                        <div className="header__description">
+                        <div className="content-header__description">
                             {mainPanel.text.description}
                         </div>
                     </div>
-                    <div className="header__toolbar">
+                    <div className="content-header__toolbar">
                         {mainPanel.toolbarButtons}
                     </div>
                 </div>

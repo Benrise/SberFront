@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 import { Content, ContentProps } from "@/shared/ui/content"
 import { DataTable } from "@/features/datatable"
@@ -7,15 +7,20 @@ import { DataframeNamesEnum } from "@/entities/table/model"
 import { Button } from "@/shared/ui/button"
 import { Constructor } from "@/widgets/constructor"
 
+import IconRefresh from '~icons/flowbite/refresh-outline';
+
 import "./styles.scss"
 
 export const PreprocessingPage = () => {
-
     const tableStore = TableModel.tableStore;
 
     const startPreload = async () => {
         await tableStore.preloadTable();
     }
+
+    const refreshTable = async () => {
+        await tableStore.getTable(DataframeNamesEnum.FILTER);
+    };
 
     useEffect(() => {
         startPreload();
@@ -27,7 +32,10 @@ export const PreprocessingPage = () => {
                 title: "Объекты предобработки",
                 description: "Список объектов предобработки"
             },
-            body: <DataTable dfName={DataframeNamesEnum.BILLS}/>
+            toolbarButtons: [
+                <Button onClick={() => refreshTable()} variant={'secondary'} size={'icon'}><IconRefresh/></Button>
+            ],
+            body: <DataTable dfName={DataframeNamesEnum.BILLS} />
         },
         additionalPanel: {
             extraAction: <Button>Произвести отчёт</Button>,

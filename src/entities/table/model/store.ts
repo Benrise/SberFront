@@ -3,6 +3,7 @@ import { http } from '../api';
 import { BaseDto, IBaseListParams, IBaseListResponse } from '@/shared/api/types';
 import { StatusCodes } from 'http-status-codes';
 import { ConfigurationDto, HistoryDto } from '@/widgets/constructor/model/types';
+import { DataframeNamesEnum } from './types';
 
 export class TableStore {
 
@@ -91,10 +92,13 @@ export class TableStore {
     }
   }
 
-  async getTable(dfName?: string, params?: IBaseListParams) {
+  async getTable(dfName?: DataframeNamesEnum, params?: IBaseListParams) {
     this.setLoading('item', true);
     try {
-      const response = await http.table.get_table(dfName, params);
+      let response = await http.table.get_table(dfName, params);
+      if (!response.data) {
+        response = await http.table.get_table(DataframeNamesEnum.BILLS, params);
+      }
       runInAction(() => {
         this.tableData = response.data
       })
@@ -123,6 +127,27 @@ export class TableStore {
     }
     finally {
       this.setLoading('list', false);
+    }
+  }
+
+  async filter(dfName?: string, params?: ConfigurationDto[]){
+    this.setLoading('item', true);
+    try {
+      const response = await http.table.filter(dfName, params);
+      if (response.status === StatusCodes.OK) {
+        if (response.data.message) {
+          return response.data.message
+        }
+        runInAction(() => {
+          this.getTable(DataframeNamesEnum.BILLS_EDIT)
+        })
+      }
+    }
+    catch (error: any) {
+      console.log(error);
+    }
+    finally {
+      this.setLoading('item', false);
     }
   }
 

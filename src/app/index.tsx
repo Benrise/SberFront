@@ -16,7 +16,7 @@ reactRoot.render(
     <Provider rootStore={rootStore}>
       <BrowserRouter>
         <App />
-        <Toaster />
+        <Toaster  />
       </BrowserRouter>
     </Provider>
   </React.StrictMode>
