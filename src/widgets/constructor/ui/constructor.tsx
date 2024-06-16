@@ -88,6 +88,11 @@ export const Constructor: React.FC = observer(() => {
         setFunctions(newFunctions);
     };
 
+    const handleRemoveConfiguration = (index: number) => {
+        remove(index);
+        setFunctions((prevFunctions) => prevFunctions.filter((_, i) => i !== index));
+    };
+
     const handleRemoveFunction = (configIndex: number, funcIndex: number) => {
         const newFunctions = [...functions];
         newFunctions[configIndex] = newFunctions[configIndex].split(',').filter((_, index) => index !== funcIndex).join(',');
@@ -105,7 +110,7 @@ export const Constructor: React.FC = observer(() => {
         },
     });
 
-    const { fields, append } = useFieldArray({
+    const { fields, append, remove } = useFieldArray({
         control: form.control,
         name: 'configurations',
     });
@@ -117,6 +122,8 @@ export const Constructor: React.FC = observer(() => {
             description: message,
         })
     };
+
+    const configurations = form.watch('configurations');
 
     return (
         <Form {...form}>
@@ -131,6 +138,9 @@ export const Constructor: React.FC = observer(() => {
                             <div className="configurations">
                                 {fields.map((field, configIndex) => (
                                     <div className="configurations__item" key={field.id}>
+                                        <Button type={"button"} className="absolute end-0 inset-y-0 flex items-center justify-center px-1" size={"icon"} variant={"ghost"} onClick={() => handleRemoveConfiguration(configIndex, configIndex)}>
+                                            <IconXmark/>
+                                        </Button>
                                         <div className="configurations__block">
                                             <div className="configurations__label">
                                                 Столбец
@@ -141,7 +151,7 @@ export const Constructor: React.FC = observer(() => {
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Select disabled={columns.length === 0 || tableStore.loading.item} defaultValue={field.value} onValueChange={field.onChange}>
+                                                            <Select disabled={columns.length === 0 || tableStore.loading.filter} defaultValue={field.value} onValueChange={field.onChange}>
                                                                 <SelectTrigger className="bg-secondary">
                                                                     <SelectValue placeholder="Выбрать" />
                                                                 </SelectTrigger>
@@ -230,8 +240,8 @@ export const Constructor: React.FC = observer(() => {
                 </Tabs>
                 {activeTab === 'configuration' && (
                     <div className="flex flex-row gap-2">
-                        <Button className="w-full" variant={"secondary"}>Сбросить</Button>
-                        <Button type="submit" className="w-full" variant={"outline"}>Применить</Button>
+                        <Button disabled={configurations?.length === 0} className="w-full" variant={"secondary"}>Сбросить</Button>
+                        <Button loading={tableStore.loading.filter} disabled={configurations?.length === 0} type="submit" className="w-full" variant={"outline"}>Применить</Button>
                     </div>
                 )}
             </form>

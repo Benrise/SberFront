@@ -20,6 +20,7 @@ export class TableStore {
     create: false,
     update: false,
     delete: false,
+    filter: false
   };
 
   constructor() {
@@ -134,7 +135,7 @@ export class TableStore {
   }
 
   async filter(dfName?: string, params?: ConfigurationDto[]){
-    this.setLoading('item', true);
+    this.setLoading('filter', true);
     try {
       const response = await http.table.filter(dfName, params);
       if (response.status === StatusCodes.OK) {
@@ -150,7 +151,7 @@ export class TableStore {
       console.log(error);
     }
     finally {
-      this.setLoading('item', false);
+      this.setLoading('filter', false);
     }
   }
 
