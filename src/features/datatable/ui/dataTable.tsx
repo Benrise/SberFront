@@ -74,29 +74,29 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
 
   const handlePreviousPage = () => {
     if (table.getCanPreviousPage()) {
-      const newPage = (meta.pg || 0)   - 1;
-      fetchTable(newPage, (meta.n || 15));
+      const newPage = table.getState().pagination.pageIndex - 1;
+      fetchTable(newPage, table.getState().pagination.pageSize);
     }
   };
   
   const handleNextPage = () => {
     if (table.getCanNextPage()) {
-      const newPage = (meta.pg || 0) + 1;
-      fetchTable(newPage, (meta.n || 15));
+      const newPage = table.getState().pagination.pageIndex + 1;
+      fetchTable(newPage, table.getState().pagination.pageSize);
     }
   };
   
   const handleLastPage = () => {
     if (table.getCanNextPage()) {
-      const newPage = ( meta.pg || 0) - 1;
-      fetchTable(newPage, meta.n || 15);
+      const newPage = (meta.pages || 0) - 1;
+      fetchTable(newPage, table.getState().pagination.pageSize);
     }
   };
 
   const handleFirstPage = () => {
     if (table.getCanPreviousPage()) {
       const newPage = 0;
-      fetchTable(newPage, meta.n || 15);
+      fetchTable(newPage, table.getState().pagination.pageSize);
     }
   };
 
