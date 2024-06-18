@@ -24,6 +24,10 @@ export class TableStore {
     delete: false,
     filter: false
   };
+  sort = {
+    column: '',
+    sort: 'asc' as 'asc' | 'desc'
+  };
 
   constructor() {
     makeAutoObservable(this);
@@ -109,7 +113,9 @@ export class TableStore {
 
   async getTable(dfName?: DataframeNamesEnum, params: IBaseListParams = {
     pg: 0,
-    n: 15
+    n: 15,
+    column: this.sort.column,
+    sort: this.sort.sort,
   }) {
     this.setLoading('item', true);
     try {
@@ -129,6 +135,13 @@ export class TableStore {
     finally {
       this.setLoading('item', false);
     }
+  }
+  
+  setSort(column: string, sort: 'asc' | 'desc') {
+    runInAction(() => {    
+      this.sort.column = column;
+      this.sort.sort = sort;
+    })
   }
 
   async history() {

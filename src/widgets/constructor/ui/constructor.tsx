@@ -180,9 +180,9 @@ export const Constructor: React.FC = observer(() => {
                                                                         <SelectValue placeholder="Выбрать" />
                                                                     </SelectTrigger>
                                                                     <SelectContent>
-                                                                        {columns.map((column, index) => (
-                                                                            <SelectItem key={index} value={column.header}>
-                                                                                {column.header}
+                                                                        {columns.map((column: any, index) => (
+                                                                            <SelectItem key={index} value={column.headerText}>
+                                                                                {column.headerText}
                                                                             </SelectItem>
                                                                         ))}
                                                                     </SelectContent>

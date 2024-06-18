@@ -1,5 +1,5 @@
 import { TableModel } from "@/entities/table";
-import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
+import { useReactTable, getCoreRowModel, flexRender, getSortedRowModel, ColumnDefBase, ColumnDef } from "@tanstack/react-table";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 
@@ -17,23 +17,34 @@ import IconLoadingCircle from '~icons/eos-icons/bubble-loading';
 import { Button } from "@/shared/ui/button";
 import { DataTableProps, TableRowData } from "../model";
 
+import IconSort from '~icons/tabler/arrows-sort';
+
 import './styles.scss';
 
-const getColumns = (data: TableRowData[]): { 
-    accessorKey: string; 
-    header: string; 
-    cell: (info: { getValue: () => string }) => JSX.Element;
-  }[] => {
-    if (!data || data.length === 0) {
-      return [];
-    };
-    const firstRow = data[0];
-    return Object.keys(firstRow).map((key) => ({
-      accessorKey: key,
-      header: key,
-      cell: (info) => <div className="data-table__cell">{info.getValue()}</div>,
-    }));
-  };
+const getColumns = <T extends Record<string, unknown>>(
+  data: T[],
+  handleSorting?: (columnId: keyof T) => void
+): ColumnDef<T>[] => {
+  if (!data || data.length === 0) {
+    return [];
+  }
+
+  const firstRow = data[0];
+  return Object.keys(firstRow).map((key: string) => ({
+    accessorKey: key,
+    header: () => (
+      <Button variant="ghost" onClick={() => handleSorting && handleSorting(key as keyof T)}>
+        {key}
+        <IconSort className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: (info: any) => (
+      <div className="data-table__cell">{info.getValue()}</div>
+    ),
+    headerText: key,
+  }));
+};
+
 const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName }) => {
   const tableStore = TableModel.tableStore;
 
@@ -41,10 +52,9 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
   const meta = tableStore.tableData.meta
   const loading = tableStore.loading
 
-
-  const fetchTable = async (page: number, pageSize: number) => {
+  const fetchTable = async (page: number, pageSize: number, column?: string, sort?: 'asc' | 'desc') => {
     try {
-      const params = { pg: page, n: pageSize };
+      const params = { pg: page, n: pageSize, column, sort };
       await tableStore.getTable(dfName, params);
     } catch (error) {
       console.error("Error fetching table data:", error);
@@ -55,7 +65,14 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
     fetchTable(tableStore.tableData.meta.pg || 0, tableStore.tableData.meta.n || 15);
   }, [dfName]);
 
-  const columns = getColumns(tableStore.tableData.data);
+  const handleSorting = (columnId: string) => {
+    const currentSort = tableStore.sort;
+    const newSort = currentSort.column === columnId && currentSort.sort === 'asc' ? 'desc' : 'asc';
+    tableStore.setSort(columnId, newSort);
+    fetchTable(meta.pg || 0, meta.n || 15, columnId, newSort);
+  };
+
+  const columns = getColumns(tableStore.tableData.data, handleSorting);
 
   const table = useReactTable<TableRowData>({
     data,

@@ -8,6 +8,8 @@ export interface IBaseListParams {
     pg?: number;
     pages?: number;
     rows?: number;
+    sort?: 'asc' | 'desc';
+    column?: string;
 }
 
 export interface IBaseListResponse<T> {
