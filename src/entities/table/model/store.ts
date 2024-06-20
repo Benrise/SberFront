@@ -24,9 +24,7 @@ export class TableStore {
     delete: false,
     filter: false
   };
-  sort: IBaseListParams = {
-    sort: 'asc' as 'asc' | 'desc'
-  };
+  sort: IBaseListParams = {}
 
   constructor() {
     makeAutoObservable(this);

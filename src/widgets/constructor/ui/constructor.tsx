@@ -29,7 +29,6 @@ import { Input } from "@/shared/ui/input"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormMessage,
@@ -74,39 +73,28 @@ const functionsList = [
     });
 
 export const Constructor: React.FC = observer(() => {
-    const [functions, setFunctions] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState<string>('configuration');
     const tableStore = TableModel.tableStore;
     const { toast } = useToast();
 
     const columns = getColumns(tableStore.tableData.data);
 
-
-    const handleAddFunction = (index: number, value: string) => {
-        const newFunctions = [...functions];
-        if (!newFunctions[index]) {
-            newFunctions[index] = value;
-        } else {
-            newFunctions[index] = `${newFunctions[index]},${value}`;
-        }
-        setFunctions(newFunctions);
-    };
-
     const handleRemoveConfiguration = (index: number) => {
         remove(index);
-        setFunctions((prevFunctions) => prevFunctions.filter((_, i) => i !== index));
     };
 
-    const handleRemoveFunction = (configIndex: number, funcIndex: number) => {
-        const newFunctions = [...functions];
-        const updatedFunctions = newFunctions[configIndex].split(',').filter((_, index) => index !== funcIndex).join(',');
-        newFunctions[configIndex] = updatedFunctions;
-        setFunctions(newFunctions);
+    const handleAddFunction = (configIndex: number, value: string) => {
+        const updatedConfigurations = [...form.getValues().configurations];
+        if (updatedConfigurations[configIndex].operations) {
+            updatedConfigurations[configIndex].operations.push({ [value]: '' });
+        }
+        form.setValue("configurations", updatedConfigurations);
+    };
     
-        const updatedConfigurations = [...form.getValues("configurations")];
-        if (!!updatedConfigurations[configIndex]?.operations) {
-            updatedConfigurations[configIndex].operations!.splice(funcIndex, 1);
-            form.setValue("configurations", updatedConfigurations);
+    const handleRemoveFunction = (configIndex: number, funcIndex: number) => {
+        const updatedConfigurations = [...form.getValues().configurations];
+        if (updatedConfigurations[configIndex].operations) {
+            updatedConfigurations[configIndex].operations.splice(funcIndex, 1);
         }
         form.setValue("configurations", updatedConfigurations);
     };
@@ -124,13 +112,15 @@ export const Constructor: React.FC = observer(() => {
 
     useEffect(() => {
         if (tableStore.importedConfigurations.length > 0) {
-            console.log(tableStore.importedConfigurations)
-            form.reset({
-                configurations: tableStore.importedConfigurations.map(config => ({
+            form.setValue('configurations', tableStore.importedConfigurations.map(config => ({
                     column: config.column,
-                }))
-            });
+                    operations: config.operations
+                })));
             tableStore.setImportedConfigurations([]);
+            setActiveTab('configuration');
+            toast({
+                description: 'Конфигурация успешно скопирована',
+            })
         }
     }, [tableStore.importedConfigurations, form]);
 
@@ -152,130 +142,128 @@ export const Constructor: React.FC = observer(() => {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col justify-between h-full">
-                <Tabs className="flex flex-col gap-2 h-full" defaultValue="configuration" onValueChange={setActiveTab}>
-                    <TabsList className="w-full">
-                        <TabsTrigger className="w-full" value="configuration">Операции</TabsTrigger>
-                        <TabsTrigger className="w-full" value="history">История</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="configuration">
-                        <div className="flex flex-col gap-2">
-                            <div className="configurations">
-                                {fields.map((field, configIndex) => (
-                                    <div className="configurations__item" key={field.id}>
-                                        <Button type={"button"} className="absolute end-0 inset-y-0 flex items-center justify-center px-1" size={"icon"} variant={"ghost"} onClick={() => handleRemoveConfiguration(configIndex)}>
-                                            <IconXmark/>
-                                        </Button>
-                                        <div className="configurations__block">
-                                            <div className="configurations__label">
-                                                Столбец
-                                            </div>
-                                                <FormField
-                                                    control={form.control}
-                                                    name={`configurations.${configIndex}.column`}
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormControl>
-                                                                <Select disabled={columns.length === 0 || tableStore.loading.filter} defaultValue={field.value || ''} onValueChange={field.onChange}>
-                                                                    <SelectTrigger className="bg-secondary">
-                                                                        <SelectValue placeholder="Выбрать" />
-                                                                    </SelectTrigger>
-                                                                    <SelectContent>
-                                                                        {columns.map((column: any, index) => (
-                                                                            <SelectItem key={index} value={column.headerText}>
-                                                                                {column.headerText}
-                                                                            </SelectItem>
-                                                                        ))}
-                                                                    </SelectContent>
-                                                                </Select>
-                                                            </FormControl>
-                                                            <FormMessage/>
-                                                        </FormItem>
-                                                    )}
-                                                />
+        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col justify-between h-full">
+            <Tabs className="flex flex-col gap-2 h-full" value={activeTab} onValueChange={setActiveTab} defaultValue="configuration">
+                <TabsList className="w-full">
+                    <TabsTrigger className="w-full" value="configuration">Операции</TabsTrigger>
+                    <TabsTrigger className="w-full" value="history">История</TabsTrigger>
+                </TabsList>
+                <TabsContent value="configuration">
+                    <div className="flex flex-col gap-2">
+                        <div className="configurations">
+                            {fields.map((field, configIndex) => (
+                                <div className="configurations__item" key={field.id}>
+                                    <Button type={"button"} className="absolute end-0 inset-y-0 flex items-center justify-center px-1" size={"icon"} variant={"ghost"} onClick={() => handleRemoveConfiguration(configIndex)}>
+                                        <IconXmark />
+                                    </Button>
+                                    <div className="configurations__block">
+                                        <div className="configurations__label">
+                                            Столбец
                                         </div>
-                                        <div className="configurations__block">
-                                            <div className="configurations__label">
-                                                Функции
-                                            </div>
-                                            {functions[configIndex] && (
-                                                <div className="configurations__block">
-                                                {functions[configIndex] && functions[configIndex].split(',').map((func, funcIndex) => (
-                                                    <div key={funcIndex} className="relative w-full max-w-sm items-center">
-                                                        <Controller
-                                                            control={form.control}
-                                                            name={`configurations.${configIndex}.operations.${funcIndex}.${func as functionType}`}
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormControl>
-                                                                        <Input 
-                                                                           className={'pl-14'} 
-                                                                           placeholder={functionsList.find((item) => item._value === func)?.label} 
-                                                                           {...field}
-                                                                        />
-                                                                    </FormControl>
-                                                                </FormItem>
-                                                            )}
-                                                        />
-                                                        <span className="absolute start-0 inset-y-0 flex items-center justify-center px-1">
-                                                            <div className="configurations__function">
-                                                                {functionsList.find((item) => item._value === func)?.value}
-                                                            </div>
-                                                        </span>
-                                                        <Button type={"button"} className="absolute end-0 inset-y-0 flex items-center justify-center px-1" size={"icon"} variant={"ghost"} onClick={() => handleRemoveFunction(configIndex, funcIndex)}>
-                                                            <IconXmark/>
-                                                        </Button>
-                                                    </div>
-                                                ))}
-                                                </div>
+                                        <FormField
+                                            control={form.control}
+                                            name={`configurations.${configIndex}.column`}
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <Select disabled={columns.length === 0 || tableStore.loading.filter} defaultValue={field.value || ''} onValueChange={field.onChange}>
+                                                            <SelectTrigger className="bg-secondary">
+                                                                <SelectValue placeholder="Выбрать" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {columns.map((column: any, index) => (
+                                                                    <SelectItem key={index} value={column.headerText}>
+                                                                        {column.headerText}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
                                             )}
-                                            {functionsList.filter((item) => !functions[configIndex] || !functions[configIndex].includes(item._value)).length > 0 && (
-                                                <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="secondary" size="icon">
-                                                        <IconPlus />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent>
-                                                    {functionsList.filter((item) => !functions[configIndex] || !functions[configIndex].includes(item._value))
-                                                        .map((item) => (
-                                                            <DropdownMenuItem
-                                                                key={item.value}
-                                                                onSelect={() => handleAddFunction(configIndex, item._value)}
-                                                            >
-                                                                <span className="configurations__function">
-                                                                    {item.value}
-                                                                </span>
-                                                                {item.label}
-                                                            </DropdownMenuItem>
-                                                    ))}
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                            )}
-                                        </div>
+                                        />
                                     </div>
-                                ))}
-                            </div>
-                            <Button variant="secondary" onClick={handleAddConfiguration}>Добавить операцию</Button>
+                                    <div className="configurations__block">
+                                        <div className="configurations__label">
+                                            Функции
+                                        </div>
+                                        <div className="configurations__block">
+                                            {form.getValues().configurations && form.getValues().configurations[configIndex].operations.map((operation, funcIndex) => (
+                                                <div key={funcIndex} className="relative w-full max-w-sm items-center">
+                                                    <Controller
+                                                        control={form.control}
+                                                        name={`configurations.${configIndex}.operations.${funcIndex}.${Object.keys(operation)[0] as functionType}`}
+                                                        render={({ field }) => (
+                                                            <FormItem>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        className={'pl-14'}
+                                                                        placeholder={functionsList.find(item => item._value === Object.keys(operation)[0])?.label}
+                                                                        {...field}
+                                                                    />
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <span className="absolute start-0 inset-y-0 flex items-center justify-center px-1">
+                                                        <div className="configurations__function">
+                                                            {functionsList.find(item => item._value === Object.keys(operation)[0])?.value}
+                                                        </div>
+                                                    </span>
+                                                    <Button type={"button"} className="absolute end-0 inset-y-0 flex items-center justify-center px-1" size={"icon"} variant={"ghost"} onClick={() => handleRemoveFunction(configIndex, funcIndex)}>
+                                                        <IconXmark />
+                                                    </Button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="secondary" size="icon">
+                                                    <IconPlus />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent>
+                                                {functionsList.filter(item => {
+                                                    const operations = form.getValues().configurations[configIndex]?.operations;
+                                                    return !operations || !Object.keys(operations).includes(item._value);
+                                                }).map((item) => (
+                                                    <DropdownMenuItem
+                                                        key={item.value}
+                                                        onSelect={() => handleAddFunction(configIndex, item._value)}
+                                                    >
+                                                        <span className="configurations__function">
+                                                            {item.value}
+                                                        </span>
+                                                        {item.label}
+                                                    </DropdownMenuItem>
+                                                ))}
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    </TabsContent>
-                    <TabsContent value="history" className='h-full'>
-                        <div className="h-full flex flex-col gap-4">
-                            <Button disabled={tableStore.loading.list}  onClick={() => tableStore.history()} className="w-full border-border text-foreground" variant={"outline"}>
-                                <IconRefresh className={'mr-2' + (tableStore.loading.list ? ' animate-spin' : '')}/> 
-                                Обновить
-                            </Button>
-                            <DistributionList />
-                        </div>  
-                    </TabsContent>
-                </Tabs>
-                {activeTab === 'configuration' && (
-                    <div className="flex flex-row gap-2">
-                        <Button disabled={configurations?.length === 0} className="w-full" variant={"secondary"}>Сбросить</Button>
-                        <Button loading={tableStore.loading.filter} disabled={configurations?.length === 0} type="submit" className="w-full" variant={"outline"}>Применить</Button>
+                        <Button variant="secondary" onClick={handleAddConfiguration}>Добавить операцию</Button>
                     </div>
-                )}
-            </form>
-        </Form>
+                </TabsContent>
+                <TabsContent value="history" className='h-full'>
+                    <div className="h-full flex flex-col gap-4">
+                        <Button disabled={tableStore.loading.list} onClick={() => tableStore.history()} className="w-full border-border text-foreground" variant={"outline"}>
+                            <IconRefresh className={'mr-2' + (tableStore.loading.list ? ' animate-spin' : '')} />
+                            Обновить
+                        </Button>
+                        <DistributionList />
+                    </div>
+                </TabsContent>
+            </Tabs>
+            {activeTab === 'configuration' && (
+                <div className="flex flex-row gap-2">
+                    <Button disabled={configurations?.length === 0} className="w-full" variant={"secondary"}>Сбросить</Button>
+                    <Button loading={tableStore.loading.filter} disabled={configurations?.length === 0} type="submit" className="w-full" variant={"outline"}>Применить</Button>
+                </div>
+            )}
+        </form>
+    </Form>
     )
 })
