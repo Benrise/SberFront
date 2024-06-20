@@ -124,6 +124,7 @@ export const Constructor: React.FC = observer(() => {
 
     useEffect(() => {
         if (tableStore.importedConfigurations.length > 0) {
+            console.log(tableStore.importedConfigurations)
             form.reset({
                 configurations: tableStore.importedConfigurations.map(config => ({
                     column: config.column,

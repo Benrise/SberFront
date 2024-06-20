@@ -24,8 +24,7 @@ export class TableStore {
     delete: false,
     filter: false
   };
-  sort = {
-    column: '',
+  sort: IBaseListParams = {
     sort: 'asc' as 'asc' | 'desc'
   };
 

@@ -33,7 +33,7 @@ const getColumns = <T extends Record<string, unknown>>(
   return Object.keys(firstRow).map((key: string) => ({
     accessorKey: key,
     header: () => (
-      <Button variant="ghost" onClick={() => handleSorting && handleSorting(key as keyof T)}>
+      <Button variant="link" className="px-0 text-black" onClick={() => handleSorting && handleSorting(key as keyof T)}>
         {key}
         <IconSort className="ml-2 h-4 w-4" />
       </Button>
