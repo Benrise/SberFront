@@ -5,9 +5,25 @@ import { http } from '../api';
 export class AuthStore {
   isAuthorized: boolean = false;
   isLoading: boolean = false;
+  isInitialized: boolean = false;
 
   constructor() {
     makeAutoObservable(this);
+  }
+  
+  async initialize() {
+    const refreshToken = localStorage.getItem('refreshToken');
+    try {
+      if (refreshToken) {
+        await this.refresh(refreshToken);
+      }
+      runInAction(() => {
+        this.isInitialized = true;
+      });
+    }
+    catch (error) {
+      console.error(error);
+    }
   }
 
   async login(credentials: AuthCredentialsDto) {
@@ -58,11 +74,12 @@ export class AuthStore {
     }
   }
 
-  async register(credentials: AuthCredentialsDto) {
+  async register(credentials: AuthCredentialsDto, callback?: () => void) {
     this.setLoading(true);
     try {
       await http.auth.register(credentials);
       await this.login(credentials);
+      callback?.();
     } catch (error) {
       console.error(error);
     } finally {
@@ -74,6 +91,17 @@ export class AuthStore {
     runInAction(() => {
       this.isLoading = state;
     });
+  }
+
+  checkAuth() {
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+
+    if (accessToken && refreshToken) {
+      this.isAuthorized = true;
+    } else {
+      this.isAuthorized = false;
+    }
   }
 }
 

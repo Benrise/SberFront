@@ -20,12 +20,18 @@ import {
 import './styles.scss'
 import { loginSchema, registerSchema } from '../model';
 import { AUTH_SBER_URL } from '@/app/config';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export const AuthForm: React.FC = observer(() => {
     const authStore = AuthModel.authStore;
 
     const initialValuesLogin: AuthModel.AuthCredentialsDto = { username: '', password: '' };
     const initialValuesRegister: AuthModel.AuthCredentialsDto = { username: '', password: '' };
+
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const from = location.state?.from?.pathname || '/';
 
     const loginForm = useForm<AuthModel.AuthCredentialsDto>({
         defaultValues: initialValuesLogin,
@@ -39,10 +45,16 @@ export const AuthForm: React.FC = observer(() => {
 
     const handleLoginSubmit: SubmitHandler<AuthModel.AuthCredentialsDto> = async (values) => {
         await authStore.login({ username: values.username, password: values.password });
+        if (authStore.isAuthorized) {
+            navigate(from, { replace: true })
+        }
     };
 
     const handleRegisterSubmit: SubmitHandler<AuthModel.AuthCredentialsDto> = async (values) => {
         await authStore.register({ username: values.username, password: values.password });
+        if (authStore.isAuthorized) {
+            navigate(from, { replace: true })
+        }
     };
 
     if (authStore.isAuthorized ) {

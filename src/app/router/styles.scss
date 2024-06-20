@@ -1,0 +1,14 @@
+.protected-route {
+    &__fallback {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        padding-bottom: 96px;
+        gap: 12px;
+        @include callout();
+        color: hsl(var(--muted-foreground));
+        background: white;
+    }
+}

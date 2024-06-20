@@ -1,5 +1,5 @@
 import { FunctionComponent, useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 
 import { AuthPage } from '@/pages/AuthPage'
 import { HomePage } from '@/pages/HomePage'
@@ -9,23 +9,14 @@ import { DistributionPage } from '@/pages/DistributionPage'
 import { DefaultLayout, AuthLayout } from '@/app/layout'
 import { ProtectedRoute } from './router';
 import { AuthModel } from '@/entities/auth'
-import { UserModel } from '@/entities/user'
 
 export const App: FunctionComponent = () => {
 
-  const authStore = AuthModel.authStore;
-  const userStore = UserModel.userStore;
+  const { authStore } = AuthModel;
 
   useEffect(() => {
-    if (!localStorage.getItem('accessToken')) {
-      return;
-    }
-
-    if (localStorage.getItem('accessToken') && !authStore.isAuthorized && localStorage.getItem('refreshToken')) {
-      const refreshToken = localStorage.getItem('refreshToken')!;
-      authStore.refresh(refreshToken);
-    }
-  }, [authStore, userStore]);
+    authStore.initialize();
+  }, [authStore]);
 
   return (
     <Routes>
