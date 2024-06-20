@@ -59,7 +59,11 @@ export const Content: React.FC<ContentProps> = ({ mainPanel, additionalPanel, re
                         </div>
                     </div>
                     <div className="content-header__toolbar">
-                        {mainPanel.toolbarButtons}
+                        {mainPanel.toolbarButtons && mainPanel.toolbarButtons.map((button, index) => (
+                            <React.Fragment key={index}>
+                                {button}
+                            </React.Fragment>
+                        ))}
                     </div>
                 </div>
             )}

@@ -38,9 +38,21 @@ const getColumns = <T extends Record<string, unknown>>(
         <IconSort className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: (info: any) => (
-      <div className="data-table__cell">{info.getValue()}</div>
-    ),
+    cell: (info: any) => {
+      let value = info.getValue();
+      if (typeof value === 'boolean') {
+        value = value ? 'Да' : 'Нет';
+      }
+      else {
+        value = value.toString() || '---';
+      }
+
+      return (
+        (
+          <div className="data-table__cell">{value}</div>
+        )
+      )
+    },
     headerText: key,
   }));
 };
