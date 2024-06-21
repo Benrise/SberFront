@@ -1,6 +1,7 @@
 .user-badge {
     display: flex;
     flex-direction: row;
+    align-items: center;
     gap: 4px;
     &__name {
         display: flex;

@@ -1,5 +1,6 @@
 .header {
     background-color: white;
+    border-bottom: 1px solid hsl(var(--muted));
 
     &__container {
         display: flex;

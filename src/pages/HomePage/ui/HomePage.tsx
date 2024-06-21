@@ -7,6 +7,7 @@ import { TableModel } from "@/entities/table"
 import { DataframeNamesEnum } from "@/entities/table/model"
 
 import "./styles.scss"
+import { motion } from "framer-motion"
 
 export const HomePage = () => {
 
@@ -38,13 +39,18 @@ export const HomePage = () => {
     }
 
     return (
-        <div className="home">
+        <motion.div className="home"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+        >
             <div className="home__container">
                 <Content
                     mainPanel={contentProps.mainPanel}
                     additionalPanel={contentProps.additionalPanel}
                 />
             </div>
-        </div>
+        </motion.div>
     )
 }

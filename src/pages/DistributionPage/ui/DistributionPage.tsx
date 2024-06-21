@@ -22,6 +22,7 @@ import { useToast } from "@/shared/ui/use-toast"
 import { ApexChart } from '@/features/chart/radar'
 import { BubbleChart } from '@/features/chart/bubble' 
 import { CandlestickChart } from "@/features/chart/candle"
+import { motion } from "framer-motion"
 
 
 export const DistributionPage = observer(() => {
@@ -151,7 +152,12 @@ export const DistributionPage = observer(() => {
     }
 
     return (
-        <div className="distribution">
+        <motion.div className="distribution"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+        >
             <div className="distribution__container">
                 <Content
                     mainPanel={contentProps.mainPanel}
@@ -159,6 +165,6 @@ export const DistributionPage = observer(() => {
                     reversed={contentProps.reversed}
                 />
             </div>
-        </div>
+        </motion.div>
     )
 })

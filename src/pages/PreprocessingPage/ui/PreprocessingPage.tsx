@@ -10,9 +10,11 @@ import { Constructor } from "@/widgets/constructor"
 import IconRefresh from '~icons/flowbite/refresh-outline';
 
 import "./styles.scss"
+
 import { observer } from "mobx-react"
 import { DistributionModel } from "@/entities/distribution"
 import { useToast } from "@/shared/ui/use-toast"
+import { motion } from "framer-motion"
 
 export const PreprocessingPage = observer(() => {
     const tableStore = TableModel.tableStore;
@@ -73,14 +75,19 @@ export const PreprocessingPage = observer(() => {
     }
 
     return (
-        <div className="home">
-            <div className="home__container">
+        <motion.div className="preprocessing"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+        >
+            <div className="preprocessing__container">
                 <Content
                     mainPanel={contentProps.mainPanel}
                     additionalPanel={contentProps.additionalPanel}
                     reversed={contentProps.reversed}
                 />
             </div>
-        </div>
+        </motion.div>
     )
 })

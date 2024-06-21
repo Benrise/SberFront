@@ -9,29 +9,35 @@ import { DistributionPage } from '@/pages/DistributionPage'
 import { DefaultLayout, AuthLayout } from '@/app/layout'
 import { ProtectedRoute } from './router';
 import { AuthModel } from '@/entities/auth'
+import { AnimatePresence } from 'framer-motion'
+import { UserModel } from '@/entities/user'
 
 export const App: FunctionComponent = () => {
 
   const { authStore } = AuthModel;
+  const { userStore } = UserModel;
 
   useEffect(() => {
     authStore.initialize();
+    userStore.me();
   }, [authStore]);
 
   return (
-    <Routes>
-      <Route path="/auth" element={<AuthLayout />}>
-        <Route index element={<AuthPage />} />
-      </Route>
-      <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<DefaultLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path="preprocessing" element={<PreprocessingPage />} />
-          <Route path="distribution" element={<DistributionPage />} />
-          <Route path="/distribution/:id" element={<DistributionPage />} />
-          <Route path="*" element={<HomePage />} />
+    <AnimatePresence mode='wait'>
+      <Routes>
+        <Route path="/auth" element={<AuthLayout />}>
+          <Route index element={<AuthPage />} />
         </Route>
-      </Route>
-    </Routes>
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<DefaultLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path="preprocessing" element={<PreprocessingPage />} />
+            <Route path="distribution" element={<DistributionPage />} />
+            <Route path="/distribution/:id" element={<DistributionPage />} />
+            <Route path="*" element={<HomePage />} />
+          </Route>
+        </Route>
+      </Routes>
+    </AnimatePresence>
   );
 }

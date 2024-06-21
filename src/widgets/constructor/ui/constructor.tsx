@@ -49,6 +49,7 @@ import IconXmark from '~icons/f7/xmark';
 import { ConfigurationFormValues, functionType } from '../model/types';
 import { getColumns } from '@/features/datatable';
 import { DistributionList } from '@/widgets/distribution/list';
+import { motion } from 'framer-motion';
 
 const functionsList = [
     { label: 'Значение', value: 'VAL',  _value: 'value' },
@@ -140,6 +141,12 @@ export const Constructor: React.FC = observer(() => {
 
     const configurations = form.watch('configurations');
 
+    const animationVariants = {
+        hidden: { opacity: 0, scale: 0.8 },
+        visible: { opacity: 1, scale: 1 },
+        exit: { opacity: 0, scale: 0.8 }
+    };
+
     return (
         <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-8 justify-between h-full">
@@ -151,7 +158,15 @@ export const Constructor: React.FC = observer(() => {
                 <TabsContent value="configuration">
                     <div className="configurations__items">
                         {fields.map((field, configIndex) => (
-                            <div className="configurations__item" key={field.id}>
+                            <motion.div
+                                initial='hidden'
+                                animate='visible'
+                                exit='exit'
+                                variants={animationVariants}
+                                transition={{ duration: 0.2 }}
+
+                                className="configurations__item" 
+                                key={field.id}>
                                 <Button type={"button"} className="absolute end-0 inset-y-0 flex items-center justify-center px-1" size={"icon"} variant={"ghost"} onClick={() => handleRemoveConfiguration(configIndex)}>
                                     <IconXmark />
                                 </Button>
@@ -240,7 +255,7 @@ export const Constructor: React.FC = observer(() => {
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
-                            </div>
+                            </motion.div>
                         ))}
                         <Button variant="secondary" onClick={handleAddConfiguration}>Добавить операцию</Button>
                     </div>
