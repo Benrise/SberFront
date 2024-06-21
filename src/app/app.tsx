@@ -11,11 +11,14 @@ import { ProtectedRoute } from './router';
 import { AuthModel } from '@/entities/auth'
 import { AnimatePresence } from 'framer-motion'
 import { UserModel } from '@/entities/user'
+import { TableModel } from '@/entities/table'
+import { observer } from 'mobx-react-lite';
 
-export const App: FunctionComponent = () => {
+export const App: FunctionComponent = observer(() => {
 
   const { authStore } = AuthModel;
   const { userStore } = UserModel;
+  const { tableStore } = TableModel;
 
   useEffect(() => {
     authStore.initialize();
@@ -23,6 +26,7 @@ export const App: FunctionComponent = () => {
       return;
     }
     userStore.me();
+    tableStore.preloadTable();
   }, [authStore, authStore.isAuthorized]);
 
   return (
@@ -43,4 +47,4 @@ export const App: FunctionComponent = () => {
       </Routes>
     </AnimatePresence>
   );
-}
+})
