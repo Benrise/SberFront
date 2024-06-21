@@ -158,13 +158,7 @@ export const Constructor: React.FC = observer(() => {
                 <TabsContent value="configuration">
                     <div className="configurations__items">
                         {fields.map((field, configIndex) => (
-                            <motion.div
-                                initial='hidden'
-                                animate='visible'
-                                exit='exit'
-                                variants={animationVariants}
-                                transition={{ duration: 0.2 }}
-
+                            <div
                                 className="configurations__item" 
                                 key={field.id}>
                                 <Button type={"button"} className="absolute end-0 inset-y-0 flex items-center justify-center px-1" size={"icon"} variant={"ghost"} onClick={() => handleRemoveConfiguration(configIndex)}>
@@ -202,7 +196,8 @@ export const Constructor: React.FC = observer(() => {
                                     <div className="configurations__label">
                                         Функции
                                     </div>
-                                    <div className="configurations__block">
+                                    <div
+                                        className="configurations__block">
                                         {form.getValues().configurations && form.getValues().configurations[configIndex].operations?.map((operation, funcIndex) => (
                                             <div key={funcIndex} className="relative w-full max-w-sm items-center">
                                                 <Controller
@@ -231,31 +226,36 @@ export const Constructor: React.FC = observer(() => {
                                             </div>
                                         ))}
                                     </div>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="secondary" size="icon">
-                                                <IconPlus />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent>
-                                            {functionsList.filter(item => {
-                                                const operations = form.getValues().configurations[configIndex]?.operations;
-                                                return !operations || !Object.keys(operations).includes(item._value);
-                                            }).map((item) => (
-                                                <DropdownMenuItem
-                                                    key={item.value}
-                                                    onSelect={() => handleAddFunction(configIndex, item._value)}
-                                                >
-                                                    <span className="configurations__function">
-                                                        {item.value}
-                                                    </span>
-                                                    {item.label}
-                                                </DropdownMenuItem>
-                                            ))}
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    {functionsList.filter(item => {
+                                            const operations = form.getValues().configurations[configIndex]?.operations;
+                                            return !operations || !operations.some(op => Object.keys(op)[0] === item._value);
+                                        }).length > 0 && (
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="secondary" size="icon">
+                                                        <IconPlus />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent>
+                                                    {functionsList.filter(item => {
+                                                        const operations = form.getValues().configurations[configIndex]?.operations;
+                                                        return !operations || !operations.some(op => Object.keys(op)[0] === item._value);
+                                                    }).map((item) => (
+                                                        <DropdownMenuItem
+                                                            key={item.value}
+                                                            onSelect={() => handleAddFunction(configIndex, item._value)}
+                                                        >
+                                                            <span className="configurations__function">
+                                                                {item.value}
+                                                            </span>
+                                                            {item.label}
+                                                        </DropdownMenuItem>
+                                                    ))}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        )}
                                 </div>
-                            </motion.div>
+                            </div>
                         ))}
                         <Button variant="secondary" onClick={handleAddConfiguration}>Добавить операцию</Button>
                     </div>
