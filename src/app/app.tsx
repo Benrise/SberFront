@@ -19,6 +19,9 @@ export const App: FunctionComponent = () => {
 
   useEffect(() => {
     authStore.initialize();
+    if (!authStore.isAuthorized) {
+      return;
+    }
     userStore.me();
   }, [authStore]);
 
