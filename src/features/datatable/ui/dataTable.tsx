@@ -35,18 +35,21 @@ const EditableCell: React.FC<any> = React.memo(({ value, row, columnId, updateDa
 
   const handleBlur = async () => {
     try {
-      if (cellValue !== value.toString()) {
+      if (cellValue !== value) {
+        let updatedValue: any = cellValue;
+
         if (typeof value === 'boolean') {
-          await updateData(row.index, columnId, cellValue === 'true');
-        } else {
-          await updateData(row.index, columnId, cellValue);
+          updatedValue = cellValue === 'true';
+        } else if (typeof value === 'number') {
+          updatedValue = parseFloat(cellValue);
         }
+
+        await updateData(row.index, columnId, updatedValue);
         toast({
-          description: `Ячейка №${row.index + 1} для столбца "${columnId}" обновлена`,
+          description: `Ячейка №${row.index + 1} для столбца: ${columnId} обновлена`,
         });
       }
-    }
-    catch (e) {
+    } catch (e) {
       toast({
         title: 'Произошла ошибка',
         description: 'Не удалось обновить ячейку',
@@ -73,14 +76,23 @@ const EditableCell: React.FC<any> = React.memo(({ value, row, columnId, updateDa
           <option value='false'>Нет</option>
         </select>
       );
-    } 
-    
-    else {
+    } else if (typeof value === 'number') {
+      return (
+        <input
+          type="number"
+          value={cellValue}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          className="data-table__input"
+          disabled={isLoading}
+        />
+      );
+    } else {
       return (
         <input
           type="text"
           value={cellValue}
-          onChange={(e) => setCellValue(e.target.value)}
+          onChange={handleChange}
           onBlur={handleBlur}
           className="data-table__input"
           disabled={isLoading}
@@ -91,7 +103,7 @@ const EditableCell: React.FC<any> = React.memo(({ value, row, columnId, updateDa
 
   return (
     <div className="flex flex-row items-center gap-2">
-      {isLoading && <IconLoadingCircle className="text-primary"/>}
+      {isLoading && <IconLoadingCircle className="text-primary" />}
       {renderInput()}
     </div>
   );
@@ -112,7 +124,7 @@ const DataCell: React.FC<any> = ({ value }) => {
 const getColumns = <T extends Record<string, unknown>>(
   data: T[],
   handleSorting?: (columnId: keyof T) => void,
-  updateData?: (rowIndex: number, columnId: string, value: unknown) => void,
+  updateData?: (rowIndex: number, columnId: string, value: string) => void,
   isEditable: boolean = false,
   tableStore?: TableStore
 ): ColumnDef<T>[] => {
@@ -177,7 +189,7 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName, e
     fetchTable(meta.pg || 0, meta.n || 15, columnId, newSort);
   };
 
-  const updateData = async (rowIndex: number, columnId: string, value: unknown) => {
+  const updateData = async (rowIndex: number, columnId: string, value: string) => {
     await tableStore.updateCell(rowIndex, columnId, value);
     setEditedCells((prev) => {
       const existingCellIndex = prev.findIndex((cell) => cell.row === rowIndex && cell.column === columnId);
