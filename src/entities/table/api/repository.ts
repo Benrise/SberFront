@@ -1,6 +1,7 @@
 import { IBaseListParams, IBaseListResponse } from '@/shared/api/types';
 import { ConfigurationDto, ConfigurationFormValues } from '@/widgets/constructor/model/types';
 import type { AxiosInstance, AxiosResponse } from 'axios';
+import { EditableCellDto } from '../model';
 
 const fileRequestConfig: AxiosRequestConfig = {
     config: {
@@ -55,5 +56,9 @@ export class TableRepository {
 
     async history() {
         return this.axiosInstance.get(`${this.endpoint}/history`);
+    }
+    
+    async edit_cell(payload: EditableCellDto) {
+        return this.axiosInstance.post(`${this.endpoint}/edit_cell`, payload);
     }
 }

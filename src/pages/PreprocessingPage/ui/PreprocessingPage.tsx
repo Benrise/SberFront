@@ -21,10 +21,6 @@ export const PreprocessingPage = observer(() => {
     const distributionStore = DistributionModel.distributionStore;
     const { toast } = useToast();
 
-    const startPreload = async () => {
-        await tableStore.preloadTable();
-    }
-
     const refreshTable = async () => {
         await tableStore.getTable(DataframeNamesEnum.FILTER);
     };
@@ -49,10 +45,6 @@ export const PreprocessingPage = observer(() => {
         }
     }
 
-    useEffect(() => {
-        startPreload();
-    }, []);
-
     const contentProps: ContentProps = {
         mainPanel: {
             text: {
@@ -65,7 +57,7 @@ export const PreprocessingPage = observer(() => {
                     Обновить
                 </Button>
             ],
-            body: <DataTable dfName={DataframeNamesEnum.BILLS} />
+            body: <DataTable dfName={DataframeNamesEnum.BILLS} editable/>
         },
         additionalPanel: {
             extraAction: <Button loading={distributionStore.loading.item} onClick={() => startDistribution()}>Произвести отчёт</Button>,

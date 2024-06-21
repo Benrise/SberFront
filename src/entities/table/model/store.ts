@@ -3,7 +3,7 @@ import { http } from '../api';
 import { BaseDto, IBaseListParams, IBaseListResponse } from '@/shared/api/types';
 import { StatusCodes } from 'http-status-codes';
 import { ConfigurationDto, ConfigurationFormValues } from '@/widgets/constructor/model/types';
-import { DataframeNamesEnum } from './types';
+import { DataframeNamesEnum, EditableCellDto } from './types';
 import { DistributionDto } from '@/entities/distribution/model';
 
 export class TableStore {
@@ -176,6 +176,43 @@ export class TableStore {
     }
     finally {
       this.setLoading('filter', false);
+    }
+  }
+
+  async updateCell(rowIndex: number, columnId: string, value: unknown) {
+    const updatedData = this.tableData.data.map((row, index) => {
+      if (index === rowIndex) {
+        return {
+          ...row,
+          [columnId]: value as string,
+        };
+      }
+      return row;
+    });
+
+    runInAction(() => {
+      this.tableData.data = updatedData;
+    });
+  }
+
+  async edit_cell(payload: EditableCellDto) {
+    this.setLoading('update', true);
+    try {
+      const response = await http.table.edit_cell(payload);
+      if (response.status === StatusCodes.OK) {
+        runInAction(() => {
+          this.getTable();
+        })
+        if (response.data.message) {
+          return response.data.message
+        }
+      }
+    }
+    catch (error: any) {
+      console.log(error);
+    }
+    finally {
+      this.setLoading('update', false);
     }
   }
 

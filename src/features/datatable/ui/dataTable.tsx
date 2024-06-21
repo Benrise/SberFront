@@ -1,7 +1,8 @@
+import React from "react";
 import { TableModel } from "@/entities/table";
-import { useReactTable, getCoreRowModel, flexRender, getSortedRowModel, ColumnDefBase, ColumnDef } from "@tanstack/react-table";
+import { useReactTable, getCoreRowModel, flexRender, ColumnDef } from "@tanstack/react-table";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Table,
@@ -21,9 +22,52 @@ import IconSort from '~icons/tabler/arrows-sort';
 
 import './styles.scss';
 
+import { useToast } from "@/shared/ui/use-toast";
+import { EditableCellDto } from "@/entities/table/model";
+
+const EditableCell: React.FC<any> = React.memo(({ value, row, columnId, updateData }) => {
+  const [cellValue, setCellValue] = useState(value);
+
+  useEffect(() => {
+    setCellValue(value);
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCellValue(e.target.value);
+  };
+
+  const handleBlur = () => {
+    updateData(row.index, columnId, cellValue);
+  };
+  
+
+  return (
+    <input
+      value={cellValue}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      className="data-table__input"
+    />
+  );
+});
+
+
+const DataCell: React.FC<any> = ({ value }) => {
+  let displayValue = value;
+  if (typeof value === 'boolean') {
+    displayValue = value ? 'Да' : 'Нет';
+  } else {
+    displayValue = value.toString() || '---';
+  }
+
+  return <div className="data-table__cell">{displayValue}</div>;
+};
+
 const getColumns = <T extends Record<string, unknown>>(
   data: T[],
-  handleSorting?: (columnId: keyof T) => void
+  handleSorting?: (columnId: keyof T) => void,
+  updateData?: (rowIndex: number, columnId: string, value: unknown) => void,
+  isEditable: boolean = false
 ): ColumnDef<T>[] => {
   if (!data || data.length === 0) {
     return [];
@@ -38,31 +82,34 @@ const getColumns = <T extends Record<string, unknown>>(
         <IconSort className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: (info: any) => {
-      let value = info.getValue();
-      if (typeof value === 'boolean') {
-        value = value ? 'Да' : 'Нет';
-      }
-      else {
-        value = value.toString() || '---';
-      }
-
-      return (
-        (
-          <div className="data-table__cell">{value}</div>
-        )
+    cell: ({ cell, row }) => (
+      isEditable ? (
+        <EditableCell
+          value={cell.getValue()}
+          row={row}
+          columnId={key}
+          updateData={updateData}
+        />
+      ) : (
+        <DataCell
+          value={cell.getValue()}
+        />
       )
-    },
+    ),
     headerText: key,
   }));
 };
 
-const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName }) => {
+const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName, editable }) => {
   const tableStore = TableModel.tableStore;
+
+  const [editedCells, setEditedCells] = useState<{ row: number | number[]; column: string; value: unknown }[]>([]);
 
   const data = tableStore.tableData.data
   const meta = tableStore.tableData.meta
   const loading = tableStore.loading
+
+  const { toast } = useToast();
 
   const fetchTable = async (page: number, pageSize: number, column?: string, sort?: 'asc' | 'desc') => {
     try {
@@ -84,7 +131,21 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
     fetchTable(meta.pg || 0, meta.n || 15, columnId, newSort);
   };
 
-  const columns = getColumns(tableStore.tableData.data, handleSorting);
+  const updateData = async (rowIndex: number, columnId: string, value: unknown) => {
+    await tableStore.updateCell(rowIndex, columnId, value);
+    setEditedCells((prev) => {
+      const existingCellIndex = prev.findIndex((cell) => cell.row === rowIndex && cell.column === columnId);
+      if (existingCellIndex >= 0) {
+        const updatedCells = [...prev];
+        updatedCells[existingCellIndex].value = value;
+        return updatedCells;
+      } else {
+        return [...prev, { row: [rowIndex], column: columnId, value }];
+      }
+    });
+  };
+
+  const columns = getColumns(tableStore.tableData.data, handleSorting, updateData, editable);
 
   const table = useReactTable<TableRowData>({
     data,
@@ -98,8 +159,31 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
         pageIndex: meta.pg || 0,
         pageSize: meta.n || 15,
       },
-    }
+    },
   });
+
+  const handleSave = async () => {
+    const updates = editedCells.map(({ row, column, value }) => ({
+      row,
+      column,
+      value
+    }));
+    try {
+      for (const update of updates) {
+        await tableStore.edit_cell(update as EditableCellDto);
+      }
+      setEditedCells([]);
+      await fetchTable(tableStore.tableData.meta.pg || 0, tableStore.tableData.meta.n || 15);
+    }
+    catch (error) {
+      console.error("Error updating table data:", error);
+      toast({
+        variant: 'destructive',
+        title: 'Не удалось обновить значения ячеек',
+        description: 'Проверьте корректность введенных данных или повторите попытку позже.',
+      })
+    }
+  };
 
   const handlePreviousPage = () => {
     if (table.getCanPreviousPage()) {
@@ -217,6 +301,7 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName })
           </div>
         </div>
       </div>
+      <Button onClick={handleSave}>Сохранить</Button>
     </>
   );
 });

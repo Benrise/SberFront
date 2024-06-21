@@ -4,6 +4,7 @@ export type TableRowData = Record<string, string>;
 
 export type DataTableProps = {
     dfName: DataframeNamesEnum;
+    editable?: boolean;
   };
   
  export type PaginationMeta = {

@@ -1,8 +1,5 @@
 import { Content, ContentProps } from "@/shared/ui/content"
-import { Constructor } from "@/widgets/constructor"
 import { Button } from "@/shared/ui/button"
-import { DataframeNamesEnum } from "@/entities/table/model"
-import { DataTable } from "@/features/datatable"
 import { TableModel } from "@/entities/table"
 
 import { DistributionModel } from "@/entities/distribution"

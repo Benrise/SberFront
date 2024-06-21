@@ -6,3 +6,9 @@ export const enum DataframeNamesEnum {
     DESTR = 'destr',
     BILLS_EDIT = 'bills_edit',
 }
+
+export class EditableCellDto {
+    row?: number[]
+    column?: string
+    value?: string
+}
