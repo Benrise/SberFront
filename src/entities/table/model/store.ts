@@ -24,6 +24,7 @@ export class TableStore {
     delete: false,
     filter: false
   };
+  cellLoading: Record<string, boolean> = {};
   sort: IBaseListParams = {}
 
   constructor() {
@@ -179,7 +180,9 @@ export class TableStore {
     }
   }
 
-  async updateCell(rowIndex: number, columnId: string, value: unknown) {
+  async updateCell(rowIndex: number, columnId: string, value: string) {
+    const cellKey = `${rowIndex}-${columnId}`;
+    this.setCellLoading(cellKey, true);
     const updatedData = this.tableData.data.map((row, index) => {
       if (index === rowIndex) {
         return {
@@ -193,27 +196,23 @@ export class TableStore {
     runInAction(() => {
       this.tableData.data = updatedData;
     });
+    await this.edit_cell({ row: [rowIndex], column: columnId, value: value.toString() });
+    this.setCellLoading(cellKey, false);
   }
 
   async edit_cell(payload: EditableCellDto) {
-    this.setLoading('update', true);
     try {
-      const response = await http.table.edit_cell(payload);
-      if (response.status === StatusCodes.OK) {
-        runInAction(() => {
-          this.getTable();
-        })
-        if (response.data.message) {
-          return response.data.message
-        }
-      }
+      await http.table.edit_cell(payload);
     }
     catch (error: any) {
       console.log(error);
     }
-    finally {
-      this.setLoading('update', false);
-    }
+  }
+
+  setCellLoading(cellKey: string, state: boolean) {
+    runInAction(() => {
+      this.cellLoading[cellKey] = state;
+    });
   }
 
   setLoading(operation: keyof typeof this.loading, state: boolean) {
