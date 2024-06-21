@@ -32,15 +32,15 @@ export const DistributionBadge: React.FC<DistributionBadgeProps> = ({ item }) =>
             </div>
             <div className="flex w-full gap-2">
                 <Badge className="w-fit" variant={
-                        item.state === DistributionStatusEnum.SUCCESS ? 'success' :
-                        item.state === DistributionStatusEnum.PENDING ? 'warning' : 'destructive'
+                        item?.state?.toLocaleLowerCase() === DistributionStatusEnum.SUCCESS_LIST ? 'success' :
+                        item?.state?.toLocaleLowerCase() === DistributionStatusEnum.PENDING ? 'warning' : 'destructive'
                     }>
-                        {item.state === DistributionStatusEnum.SUCCESS ? <IconCheck/>:
-                        item.state === DistributionStatusEnum.PENDING ? <IconClock/>  : <IconError/>}
+                        {item?.state?.toLocaleLowerCase() === DistributionStatusEnum.SUCCESS_LIST ? <IconCheck/>:
+                        item?.state?.toLocaleLowerCase() === DistributionStatusEnum.PENDING ? <IconClock/>  : <IconError/>}
                 </Badge>
                 <div className="text-[12px] font-medium opacity-70">
-                    { item.state === DistributionStatusEnum.SUCCESS ? 'Готово' :
-                    item.state === DistributionStatusEnum.PENDING ? 'В обработке' : 'Ошибка' }
+                    { item?.state?.toLocaleLowerCase() === DistributionStatusEnum.SUCCESS_LIST ? 'Готово' :
+                    item?.state?.toLocaleLowerCase() === DistributionStatusEnum.PENDING ? 'В обработке' : 'Ошибка' }
                 </div>
             </div>
             <div className="distribution-badge__actions">

@@ -56,7 +56,7 @@ export const DistributionPage = observer(() => {
         if (id) {
             try {
                 await distributionStore.get(id);
-                setStatus(DistributionStatusEnum.SUCCESS);
+                setStatus(DistributionStatusEnum.SUCCESS_ITEM);
             }
             catch (e) {
                 toast({
@@ -79,7 +79,7 @@ export const DistributionPage = observer(() => {
     const contentProps: ContentProps = {
         mainPanel: {
             text: {
-                title: id ? 'Распределение' : 'Последнее расчитанное распределение' + (item?.config_id),
+                title: id ? 'Распределение' : 'Последнее расчитанное распределение ' + (item?.config_id),
                 description: item?.create_at ?  "От " + format(item?.create_at) : ''
             },
             toolbarButtons: [

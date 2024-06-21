@@ -3,7 +3,8 @@ import { ConfigurationDto } from "@/widgets/constructor/model"
 export const enum DistributionStatusEnum {
     PENDING = 'pending',
     FAILURE = 'failure',
-    SUCCESS = 'sucsess',
+    SUCCESS_ITEM = 'sucsess',
+    SUCCESS_LIST = 'success'
 }
 
 export class DistributionDto {
