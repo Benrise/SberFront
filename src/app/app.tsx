@@ -23,7 +23,7 @@ export const App: FunctionComponent = () => {
       return;
     }
     userStore.me();
-  }, [authStore]);
+  }, [authStore, authStore.isAuthorized]);
 
   return (
     <AnimatePresence mode='wait'>
