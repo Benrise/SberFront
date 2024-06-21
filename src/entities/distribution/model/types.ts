@@ -22,8 +22,10 @@ export class DistributionDto {
         id?: string
         user_name?: string
         result: {
-            link_1?: string
-            link_2?: string
+            distributed_bills?: string;
+            export_distributed_bills?: string;
+            donut_graph?: any;
+            dots_graph?: any;
         }
     }
 }

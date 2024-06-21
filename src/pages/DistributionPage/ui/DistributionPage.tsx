@@ -87,13 +87,13 @@ export const DistributionPage = observer(() => {
                     <IconRefresh className={'mr-2' + (tableStore.loading.item ? ' animate-spin' : '')}/>
                     Обновить
                 </Button>,
-                item?.data?.result?.link_1 && (
-                    <a key={2} href={item.data.result.link_1}>
+                item?.data?.result?.distributed_bills && (
+                    <a key={2} href={item.data.result.distributed_bills}>
                     <Button variant="secondary">Скачать целевое изображение</Button>
                     </a>
                 ),
-                item?.data?.result?.link_2 && (
-                    <a key={3} href={item.data.result.link_2}>
+                item?.data?.result?.export_distributed_bills && (
+                    <a key={3} href={item.data.result.export_distributed_bills}>
                     <Button variant="secondary">Отчет</Button>
                     </a>
                 ),

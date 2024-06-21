@@ -28,7 +28,7 @@ export const DistributionBadge: React.FC<DistributionBadgeProps> = ({ item }) =>
     return (
         <div className="distribution-badge">
             <div className="distribution-badge__text">
-                Распределение от {item.create_at ? format(item.create_at) : ''}
+                Распределение от {item.create_at ? format(item.create_at, 'DD.MM.YYYY HH:mm') : ''}
             </div>
             <div className="flex w-full gap-2">
                 <Badge className="w-fit" variant={
