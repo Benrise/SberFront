@@ -62,7 +62,7 @@ class ApexChart extends React.Component<ApexChartProps, ApexChartState> {
         tooltip: {
           y: {
             formatter: (val: number) => {
-              return val.toString();
+              return val?.toString() || '---';
             },
           },
         },
@@ -73,7 +73,7 @@ class ApexChart extends React.Component<ApexChartProps, ApexChartState> {
           labels: {
             formatter: (val: number, i: number) => {
               if (i % 2 === 0) {
-                return val.toString();
+                return val?.toString() || '---';
               } else {
                 return '';
               }

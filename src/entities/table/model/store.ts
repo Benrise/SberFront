@@ -196,7 +196,7 @@ export class TableStore {
     runInAction(() => {
       this.tableData.data = updatedData;
     });
-    await this.edit_cell({ row: [rowIndex], column: columnId, value: value.toString() });
+    await this.edit_cell({ row: [rowIndex], column: columnId, value: value?.toString() || '---' });
     this.setCellLoading(cellKey, false);
   }
 

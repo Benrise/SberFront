@@ -66,7 +66,7 @@ const EditableCell: React.FC<any> = React.memo(({ value, row, columnId, updateDa
     if (typeof value === 'boolean') {
       return (
         <select
-          value={cellValue.toString()}
+          value={cellValue?.toString() || '---'}
           onChange={handleChange}
           onBlur={handleBlur}
           className="data-table__input"
@@ -115,7 +115,7 @@ const DataCell: React.FC<any> = ({ value }) => {
   if (typeof value === 'boolean') {
     displayValue = value ? 'Да' : 'Нет';
   } else {
-    displayValue = value.toString() || '---';
+    displayValue = value?.toString() || '---';
   }
 
   return <div className="data-table__cell">{displayValue}</div>;

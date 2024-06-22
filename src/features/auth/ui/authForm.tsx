@@ -63,7 +63,7 @@ export const AuthForm: React.FC = observer(() => {
 
     const currentURL = new URL(window.location.href);
     currentURL.search = '';
-    const sberAuthUrl = `${AUTH_SBER_URL}?returned_url=${currentURL.toString()}`;
+    const sberAuthUrl = `${AUTH_SBER_URL}?returned_url=${currentURL?.toString() || '---'}`;
     
 
     return (
