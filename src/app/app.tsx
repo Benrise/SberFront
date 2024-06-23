@@ -26,7 +26,6 @@ export const App: FunctionComponent = observer(() => {
       return;
     }
     userStore.me();
-    tableStore.preloadTable();
   }, [authStore, authStore.isAuthorized]);
 
   return (

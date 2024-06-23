@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 
 import {
     Tabs,
@@ -49,7 +48,7 @@ import IconXmark from '~icons/f7/xmark';
 import { ConfigurationFormValues, functionType } from '../model/types';
 import { getColumns } from '@/features/datatable';
 import { DistributionList } from '@/widgets/distribution/list';
-import { motion } from 'framer-motion';
+import { schema } from '../model/form-schema';
 
 const functionsList = [
     { label: 'Значение', value: 'VAL',  _value: 'value' },
@@ -57,21 +56,6 @@ const functionsList = [
     { label: 'Выражение', value: 'EXP',  _value: 'expression' },
   ];
 
-
-  const schema: yup.ObjectSchema<ConfigurationFormValues> = yup.object().shape({
-        configurations: yup.array().of(
-            yup.object().shape({
-                column: yup.string().required('Выбор столбца обязателен'),
-                operations: yup.array().of(
-                    yup.object().shape({
-                        value: yup.string(),
-                        filter: yup.string(),
-                        expression: yup.string(),
-                    })
-                ).required().min(1),
-            })
-        ).required().min(1),
-    });
 
 export const Constructor: React.FC = observer(() => {
     const [activeTab, setActiveTab] = useState<string>('configuration');
@@ -140,12 +124,6 @@ export const Constructor: React.FC = observer(() => {
     };
 
     const configurations = form.watch('configurations');
-
-    const animationVariants = {
-        hidden: { opacity: 0, scale: 0.8 },
-        visible: { opacity: 1, scale: 1 },
-        exit: { opacity: 0, scale: 0.8 }
-    };
 
     return (
         <Form {...form}>

@@ -21,9 +21,11 @@ import './styles.scss'
 import { loginSchema, registerSchema } from '../model';
 import { AUTH_SBER_URL } from '@/app/config';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { TableModel } from '@/entities/table';
 
 export const AuthForm: React.FC = observer(() => {
     const authStore = AuthModel.authStore;
+    const tableStore = TableModel.tableStore;
 
     const initialValuesLogin: AuthModel.AuthCredentialsDto = { username: '', password: '' };
     const initialValuesRegister: AuthModel.AuthCredentialsDto = { username: '', password: '' };
@@ -47,6 +49,7 @@ export const AuthForm: React.FC = observer(() => {
         await authStore.login({ username: values.username, password: values.password });
         if (authStore.isAuthorized) {
             navigate(from, { replace: true })
+            tableStore.preloadTable();
         }
     };
 
