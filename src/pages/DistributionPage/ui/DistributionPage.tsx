@@ -229,7 +229,7 @@ export const DistributionPage = observer(() => {
         )
     }
 
-    if (item?.status === DistributionStatusEnum.PENDING) {
+    if (item?.status === DistributionStatusEnum.PENDING || typeof(item?.data) === 'number') {
         return (
             <div className="distribution__fallback">
                 <img src='/images/png/fog.png'/>
