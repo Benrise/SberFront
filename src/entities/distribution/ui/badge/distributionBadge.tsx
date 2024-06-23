@@ -25,6 +25,17 @@ export const DistributionBadge: React.FC<DistributionBadgeProps> = ({ item }) =>
         navigate(`/distribution/${item.config_id}`);
     };
 
+    const progress = () => {
+        if (item?.state === DistributionStatusEnum.PENDING) {
+            if (item?.distribution_info) {
+                return `(${Math.round(parseFloat(item?.distribution_info))}%)`
+            }
+            return '(0%)'
+        } else {
+            return ''
+        }
+    }
+
     return (
         <div className="distribution-badge">
             <div className="distribution-badge__text">
