@@ -2,54 +2,43 @@ import { ApexOptions } from 'apexcharts';
 import React from 'react';
 import ReactApexChart from 'react-apexcharts';
 
-interface ApexChartProps {}
-
-interface ApexChartState {
-  series: {
-    name: string;
-    data: { x: string; y: number; z: number }[];
-  }[];
-  options: ApexOptions
+interface DataPoint {
+  x: number;
+  y: number;
+  r: number;
 }
 
-class BubbleChart extends React.Component<ApexChartProps, ApexChartState> {
-  constructor(props: ApexChartProps) {
+interface BubbleChartProps {
+  data: DataPoint[];
+}
+
+interface BubbleChartState {
+  series: {
+    name: string;
+    data: { x: number; y: number; z: number }[];
+  }[];
+  options: ApexOptions;
+}
+
+class BubbleChart extends React.Component<BubbleChartProps, BubbleChartState> {
+  constructor(props: BubbleChartProps) {
     super(props);
+
+    const formattedData = props.data.map((point) => ({
+      x: point.x,
+      y: Math.round(point.y),
+      z: point.r,
+    }));
 
     this.state = {
       series: [
         {
-          name: 'Осноаные средста',
-          data: this.generateData(new Date('24 июля 2024').getTime(), 20, {
-            min: 10,
-            max: 60,
-          }),
-        },
-        {
-          name: 'Запасы',
-          data: this.generateData(new Date('24 июля 2024').getTime(), 20, {
-            min: 10,
-            max: 60,
-          }),
-        },
-        {
-          name: 'Объекты учета',
-          data: this.generateData(new Date('24 июля 2024').getTime(), 20, {
-            min: 10,
-            max: 60,
-          }),
-        },
-        {
-          name: 'Задачи',
-          data: this.generateData(new Date('24 июля 2024').getTime(), 20, {
-            min: 10,
-            max: 60,
-          }),
+          name: 'Общая сумма',
+          data: formattedData,
         },
       ],
       options: {
         chart: {
-          height: 350,
           type: 'bubble',
         },
         dataLabels: {
@@ -59,29 +48,31 @@ class BubbleChart extends React.Component<ApexChartProps, ApexChartState> {
           opacity: 0.8,
         },
         title: {
-          text: 'График распределения запасов',
+          text: 'График распределения затрат',
         },
         xaxis: {
-          tickAmount: 12,
-          type: 'category',
+          tickAmount: 10,
+          type: 'numeric',
+          title: {
+            text: 'Частота',
+          },
         },
         yaxis: {
-          max: 70,
+          title: {
+            text: 'Сумма затрат',
+          },
+        },
+        tooltip: {
+          y: {
+            formatter: (val: number) => `${val.toFixed(2)} руб.`,
+          },
+          z: {
+            formatter: (val: number) => `${val.toFixed(2)} руб.`,
+            title: 'Потраченная сумма',
+          },
         },
       },
     };
-  }
-
-  generateData(baseval: number, count: number, yrange: { min: number; max: number }) {
-    const series = [];
-    for (let i = 0; i < count; i++) {
-      const x = `w${i + 1}`;
-      const y = Math.floor(Math.random() * (yrange.max - yrange.min + 1)) + yrange.min;
-      const z = Math.floor(Math.random() * 75) + 15;
-
-      series.push({ x, y, z });
-    }
-    return series;
   }
 
   render() {
@@ -92,7 +83,7 @@ class BubbleChart extends React.Component<ApexChartProps, ApexChartState> {
             options={this.state.options}
             series={this.state.series}
             type="bubble"
-            height={350}
+            width='100%'
           />
         </div>
         <div id="html-dist"></div>

@@ -1,25 +1,39 @@
 import { Content, ContentProps } from "@/shared/ui/content"
 import { Button } from "@/shared/ui/button"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+  } from "@/shared/ui/dropdown-menu"
 import { TableModel } from "@/entities/table"
 
 import { DistributionModel } from "@/entities/distribution"
-import { useNavigate, useParams } from "react-router-dom"
+import { NavLink, useNavigate, useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { format } from "@formkit/tempo"
 import { DistributionStatusEnum } from "@/entities/distribution/model"
 
 import IconRefresh from '~icons/flowbite/refresh-outline';
-
+import IconDownloadFile from '~icons/lucide/file-down';
 import IconLoadingCircle from '~icons/eos-icons/bubble-loading'
+
 import { observer } from "mobx-react-lite"
 
-import './styles.scss'
 import { useToast } from "@/shared/ui/use-toast"
 
-import { ApexChart } from '@/features/chart/radar'
+import { PieChart } from '@/features/chart/pie'
 import { BubbleChart } from '@/features/chart/bubble' 
-import { CandlestickChart } from "@/features/chart/candle"
+import { BarChart } from "@/features/chart/bar"
+
+
 import { motion } from "framer-motion"
+
+import './styles.scss'
+import { DataTable } from "@/features/datatable"
+import { DataframeNamesEnum } from "@/entities/table/model"
 
 
 export const DistributionPage = observer(() => {
@@ -31,9 +45,23 @@ export const DistributionPage = observer(() => {
     const item = distributionStore.item;
     const { toast } = useToast();
 
+    const fetchTable = async () => {
+        await tableStore.getTable(DataframeNamesEnum.DISTRIBUTION);
+    }
+
+    const toolbarConfig = {
+        title: 'Итоговое распределение',
+        buttons: [
+            <Button disabled={tableStore.loading.item} onClick={() => fetchTable()} variant={'secondary'}>
+            <IconRefresh className={'mr-2' + (tableStore.loading.item ? ' animate-spin' : '')}/>
+                Обновить
+            </Button>
+        ]
+    }
+
     const fetchDistributions = async () => {
         await tableStore.history();
-        const lastDistributionId = tableStore.distributions[tableStore.distributions.length - 1].config_id;
+        const lastDistributionId = tableStore.distributions[tableStore.distributions?.length - 1].config_id;
         if (lastDistributionId) {
             try {
                 await distributionStore.get(lastDistributionId);
@@ -46,6 +74,12 @@ export const DistributionPage = observer(() => {
                   });
                 setStatus(DistributionStatusEnum.FAILURE);
             }
+        }
+        if (lastDistributionId) {
+            toast({
+                title: 'Будет отображено последнее расчитанное распределение',
+                description: 'Список распределений для выбора находится в разделе "История" на странице предобработки данных',
+            });
         }
     }
 
@@ -71,7 +105,11 @@ export const DistributionPage = observer(() => {
 
     useEffect(() => {
         fetchItem(id);
-    },[distributionStore]);
+    }, [distributionStore]);
+
+    useEffect(() => {
+        fetchTable();
+    }, []);
 
     const contentProps: ContentProps = {
         mainPanel: {
@@ -84,32 +122,87 @@ export const DistributionPage = observer(() => {
                     <IconRefresh className={'mr-2' + (tableStore.loading.item ? ' animate-spin' : '')}/>
                     Обновить
                 </Button>,
-                item?.data?.result?.distributed_bills && (
-                    <a key={2} href={item.data.result.distributed_bills}>
-                    <Button variant="secondary">Скачать целевое изображение</Button>
-                    </a>
-                ),
-                item?.data?.result?.export_distributed_bills && (
-                    <a key={3} href={item.data.result.export_distributed_bills}>
-                    <Button variant="secondary">Отчет</Button>
-                    </a>
-                ),
+                ((item?.data?.distributed_bills || item?.data?.export_distributed_bills_csv) &&
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button>
+                            Скачать отчёт 
+                            <IconDownloadFile className="ml-2"/>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel>
+                            Формат
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                            {item?.data?.distributed_bills && (
+                                <a key={2} href={item.data.distributed_bills}>
+                                    <Button size={'icon'} className="w-full" variant="ghost">.XLS</Button>
+                                </a>
+                            )}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            {item?.data?.export_distributed_bills_csv && (
+                                <a key={3} href={item.data.export_distributed_bills_csv}>
+                                    <Button size={'icon'} className="w-full" variant="ghost">.CSV</Button>
+                                </a>
+                            )}
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>),
+                ((item?.data?.distributed_bills_predict || item?.data?.distributed_bills_predict_csv) &&
+                <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button>
+                        Скачать предсказание 
+                        <IconDownloadFile className="ml-2"/>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuLabel>
+                        Формат
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                        {item?.data?.distributed_bills_predict && (
+                            <a key={2} href={item.data.distributed_bills_predict}>
+                                <Button size={'icon'} className="w-full" variant="ghost">.XLS</Button>
+                            </a>
+                        )}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        {item?.data?.distributed_bills_predict_csv && (
+                            <a key={3} href={item.data.distributed_bills_predict_csv}>
+                                <Button size={'icon'} className="w-full" variant="ghost">.CSV</Button>
+                            </a>
+                        )}
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+                </DropdownMenu>)
             ],
-            body: (
-                <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-                  <div style={{ display: 'flex', height: '50%' }}>
-                    <div style={{ width: '50%' }}>
-                      <ApexChart />
-                    </div>
-                    <div style={{ width: '50%' }}>
-                      <BubbleChart />
-                    </div>
-                  </div>
-                  <div style={{ height: '50%' }}>
-                    <CandlestickChart />
-                  </div>
+            body: (item?.data?.donut_graph || item?.data?.dots_graph) && (
+                <div className="flex flex-col w-full gap-8">
+                <div style={{ display: 'flex', height: '50%' }}>
+                  {item?.data?.donut_graph && 
+                      <div style={{ width: '50%' }}>
+                          <PieChart data={item?.data?.donut_graph}/>
+                      </div>
+                  }
+                  {item?.data?.dots_graph && 
+                      <div style={{ width: '50%' }}>
+                          <BubbleChart data={item?.data?.dots_graph} />
+                      </div>
+                  }
                 </div>
-              )
+                {item?.data?.bars_graph && 
+                  <div style={{ height: '50%' }}>
+                      <BarChart data={item?.data?.bars_graph} />
+                  </div>
+                }
+                <DataTable dfName={DataframeNamesEnum.DISTRIBUTION} toolbar={toolbarConfig}/>
+              </div>
+            )
         }
     }
 
@@ -143,6 +236,34 @@ export const DistributionPage = observer(() => {
                 <div>Распределение {distributionStore.item?.config_id} в обработке...</div>
                 <div className="flex gap-2">
                     <Button onClick={() => fetchItem(id)}>Проверить статус</Button>
+                </div>
+            </div>
+        )
+    }
+
+    if (!item) {
+        return (
+            <div className="distribution__fallback">
+                <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ rotate: 360, scale: 1 }}
+                    transition={{
+                        type: "spring",
+                        stiffness: 260,
+                        damping: 20
+                    }}
+                >
+                    <img src='/images/png/empty-report.png'/>
+                </motion.div>
+                <div className="text-center">
+                    Отсутствует последнее рассчитанное распределение. 
+                    <br/> 
+                    Для расчета распределения произведите предобработку загруженных ранее данных.
+                </div>
+                <div className="flex gap-2">
+                    <NavLink to='/preprocessing'>
+                        <Button>К предобработке данных</Button>
+                    </NavLink>
                 </div>
             </div>
         )
