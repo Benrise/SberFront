@@ -26,7 +26,7 @@ export const Content: React.FC<ContentProps> = ({ mainPanel, additionalPanel, re
             <div className="flex flex-col gap-6 w-[25%]">
                 <div className="content__additional-panel">
                     {additionalPanel.text && (
-                        <div className="content__header header">
+                        <div className="content__header content-header">
                             <div className="content-header__text">
                                 <div className="content-header__title">
                                     {additionalPanel.text.title}
@@ -36,7 +36,7 @@ export const Content: React.FC<ContentProps> = ({ mainPanel, additionalPanel, re
                                 </div>
                             </div>
                             <div className="content-header__toolbar">
-                                {mainPanel.toolbarButtons}
+                                {additionalPanel.toolbarButtons}
                             </div>
                         </div>
                     )}

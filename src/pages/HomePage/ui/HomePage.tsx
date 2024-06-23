@@ -3,16 +3,37 @@ import { BillsList } from "@/widgets/bills/list"
 import { DataTable } from "@/features/datatable"
 import { DataframeNamesEnum } from "@/entities/table/model"
 
-import "./styles.scss"
+import IconRefresh from '~icons/flowbite/refresh-outline';
+
 import { motion } from "framer-motion"
+import { Button } from "@/shared/ui/button"
+import { TableModel } from "@/entities/table"
+
+import "./styles.scss"
 
 export const HomePage = () => {
+    const tableStore = TableModel.tableStore;
+
+    const fetchTable = async () => {
+        await tableStore.getTable(DataframeNamesEnum.BILLS);
+    };
+
+    const fetchBills = async () => {
+        await tableStore.fetchBills();
+    }
+
     const contentProps: ContentProps = {
         mainPanel: {
             text: {
                 title: "Объекты распределения",
                 description: "Все загруженные файлы в систему"
             },
+            toolbarButtons: [
+                <Button disabled={tableStore.loading.item} onClick={() => fetchTable()} variant={'secondary'}>
+                    <IconRefresh className={'mr-2' + (tableStore.loading.item ? ' animate-spin' : '')}/>
+                    Обновить
+                </Button>
+            ],
             body: <DataTable dfName={DataframeNamesEnum.BILLS}/>
         },
         additionalPanel: {
@@ -20,6 +41,11 @@ export const HomePage = () => {
                 title: "Счета на оплату",
                 description: "Загружнные файлы счетов на оплату"
             },
+            toolbarButtons: [
+                <Button size="icon" disabled={tableStore.loading.item} onClick={() => fetchBills()} variant={'secondary'}>
+                    <IconRefresh className={(tableStore.loading.item ? ' animate-spin' : '')}/>
+                </Button>
+            ],
             body: <BillsList/>
         },
     }
