@@ -1,10 +1,9 @@
 import { ConfigurationDto } from "@/widgets/constructor/model"
 
 export const enum DistributionStatusEnum {
-    PENDING = 'pending',
-    FAILURE = 'failure',
-    SUCCESS_ITEM = 'sucsess',
-    SUCCESS_LIST = 'success'
+    PENDING = 'PENDING',
+    FAILURE = 'FAILURE',
+    SUCCESS = 'SUCCESS',
 }
 
 export class DistributionDto {
@@ -21,11 +20,22 @@ export class DistributionDto {
     data?: {
         id?: string
         user_name?: string
-        result: {
-            distributed_bills?: string;
-            export_distributed_bills?: string;
-            donut_graph?: any;
-            dots_graph?: any;
-        }
+        distributed_bills?: string;
+        export_distributed_bills_csv?: string;
+        distributed_bills_predict?: string;
+        distributed_bills_predict_csv?: string;
+        donut_graph: {
+            series: number[];
+            labels: string[];
+        };
+        dots_graph: {
+            x: number;
+            y: number;
+            r: number;
+        }[];
+        bars_graph: {
+            series: number[];
+            categories: string[]
+        };
     }
 }

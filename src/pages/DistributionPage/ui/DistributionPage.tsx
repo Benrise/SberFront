@@ -53,7 +53,7 @@ export const DistributionPage = observer(() => {
         if (id) {
             try {
                 await distributionStore.get(id);
-                setStatus(DistributionStatusEnum.SUCCESS_ITEM);
+                setStatus(DistributionStatusEnum.SUCCESS);
             }
             catch (e) {
                 toast({
@@ -122,7 +122,7 @@ export const DistributionPage = observer(() => {
           );
     }
 
-    if (item?.status?.toLowerCase() === DistributionStatusEnum.FAILURE || status === DistributionStatusEnum.FAILURE) {
+    if (item?.status === DistributionStatusEnum.FAILURE) {
         return (
             <div className="distribution__fallback">
                 <img src='/images/png/rejected.png'/>
@@ -136,7 +136,7 @@ export const DistributionPage = observer(() => {
         )
     }
 
-    if (item?.status?.toLowerCase() === DistributionStatusEnum.PENDING || status === DistributionStatusEnum.PENDING) {
+    if (item?.status === DistributionStatusEnum.PENDING) {
         return (
             <div className="distribution__fallback">
                 <img src='/images/png/fog.png'/>
