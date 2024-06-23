@@ -60,7 +60,7 @@ export const PreprocessingPage = observer(() => {
             body: <DataTable dfName={DataframeNamesEnum.BILLS} editable/>
         },
         additionalPanel: {
-            extraAction: <Button loading={distributionStore.loading.item} onClick={() => startDistribution()}>Произвести отчёт</Button>,
+            extraAction: <Button loading={distributionStore.loading.item} onClick={() => startDistribution()}>Начать распределение</Button>,
             body: <Constructor/>
         },
         reversed: true

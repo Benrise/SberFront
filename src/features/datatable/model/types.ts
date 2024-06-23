@@ -5,6 +5,10 @@ export type TableRowData = Record<string, string>;
 export type DataTableProps = {
     dfName: DataframeNamesEnum;
     editable?: boolean;
+    toolbar?: {
+      title?: string;
+      buttons?: React.ReactNode[];
+    }
   };
   
  export type PaginationMeta = {

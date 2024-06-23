@@ -121,6 +121,9 @@ export class TableStore {
       if (!response.data.data) {
         response = await http.table.get_table(DataframeNamesEnum.BILLS, params);
       }
+      if (typeof(response.data) === 'string') {
+        return
+      }
       runInAction(() => {
         this.tableData = response.data
       })
@@ -164,9 +167,9 @@ export class TableStore {
     try {
       const response = await http.table.filter(dfName, params);
       if (response.status === StatusCodes.OK) {
-        runInAction(() => {
-          this.getTable(DataframeNamesEnum.FILTER);
-        })
+        setTimeout(async () => {
+          await this.getTable(DataframeNamesEnum.FILTER);
+      }, 3000);
         if (response.data.message) {
           return response.data.message
         }

@@ -3,7 +3,7 @@ import { ConfigurationDto, ConfigurationFormValues } from "@/widgets/constructor
 export const enum DataframeNamesEnum {
     BILLS = 'bills',
     FILTER = 'filter',
-    DESTR = 'destr',
+    DISTRIBUTION = 'distr',
     BILLS_EDIT = 'bills_edit',
 }
 

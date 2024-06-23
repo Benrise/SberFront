@@ -24,6 +24,7 @@ import './styles.scss';
 
 import { useToast } from "@/shared/ui/use-toast";
 import { TableStore } from "@/entities/table/model";
+import { motion } from "framer-motion";
 
 const EditableCell: React.FC<any> = React.memo(({ value, row, columnId, updateData, tableStore }) => {
   const [cellValue, setCellValue] = useState(value);
@@ -128,7 +129,7 @@ const getColumns = <T extends Record<string, unknown>>(
   isEditable: boolean = false,
   tableStore?: TableStore
 ): ColumnDef<T>[] => {
-  if (!data || data.length === 0) {
+  if (!data || data?.length === 0) {
     return [];
   }
 
@@ -160,7 +161,7 @@ const getColumns = <T extends Record<string, unknown>>(
   }));
 };
 
-const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName, editable }) => {
+const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName, editable, toolbar }) => {
   const tableStore = TableModel.tableStore;
 
   const [_, setEditedCells] = useState<{ row: number | number[]; column: string; value: unknown }[]>([]);
@@ -179,14 +180,14 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName, e
   };
 
   useEffect(() => {
-    fetchTable(tableStore.tableData.meta.pg || 0, tableStore.tableData.meta.n || 15);
+    fetchTable(tableStore.tableData.meta?.pg || 0, tableStore.tableData.meta?.n || 15);
   }, [dfName]);
 
   const handleSorting = (columnId: string) => {
     const currentSort = tableStore.sort;
     const newSort = currentSort.column === columnId && currentSort.sort === 'asc' ? 'desc' : 'asc';
     tableStore.setSort(columnId, newSort);
-    fetchTable(meta.pg || 0, meta.n || 15, columnId, newSort);
+    fetchTable(meta?.pg || 0, meta?.n || 15, columnId, newSort);
   };
 
   const updateData = async (rowIndex: number, columnId: string, value: string) => {
@@ -210,12 +211,12 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName, e
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
-    pageCount: meta.pages,
-    rowCount: meta.rows,
+    pageCount: meta?.pages,
+    rowCount: meta?.rows,
     state: {
       pagination: {
-        pageIndex: meta.pg || 0,
-        pageSize: meta.n || 15,
+        pageIndex: meta?.pg || 0,
+        pageSize: meta?.n || 15,
       },
     },
   });
@@ -236,7 +237,7 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName, e
   
   const handleLastPage = () => {
     if (table.getCanNextPage()) {
-      const newPage = (meta.pages || 0) - 1;
+      const newPage = (meta?.pages || 0) - 1;
       fetchTable(newPage, table.getState().pagination.pageSize);
     }
   };
@@ -256,9 +257,40 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName, e
     );
   }
 
+  if (data.length === 0) {
+    return (
+      <div className="data-table__fallback">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ rotate: 360, scale: 1 }}
+          transition={{
+            type: "spring",
+            stiffness: 260,
+            damping: 20
+          }}
+        >
+          <img className="w-[128px] " src="/images/png/empty-report.png" alt="Empty List" />     
+        </motion.div>
+        <div className='text-center'>Данные отсутствуют</div>
+      </div>
+    )
+  }
+
   return (
     <>
       <div className="data-table">
+        {(toolbar?.title || toolbar?.buttons) && (
+          <div className="data-table__header">
+              {toolbar?.title && <div className="data-table__title">{toolbar?.title}</div>}
+              <div className="data-table__actions">
+                {toolbar?.buttons && toolbar?.buttons.map((button, index) => (
+                      <React.Fragment key={index}>
+                          {button}
+                      </React.Fragment>
+                ))}
+              </div>
+            </div>
+        )}
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -288,11 +320,9 @@ const DataTable: React.FunctionComponent<DataTableProps> = observer(({ dfName, e
                 </TableRow>
               ))
             ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Данные отсутствуют
-                </TableCell>
-              </TableRow>
+              <div className="data-table__fallback">
+                <div className='text-center'>Данные отсутствуют</div>
+              </div>
             )}
           </TableBody>
         </Table>

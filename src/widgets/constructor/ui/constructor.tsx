@@ -16,7 +16,7 @@ import {
 } from "@/shared/ui/select"
 
 import { Button } from "@/shared/ui/button"
-import { useEffect, useState } from "react"
+import { memo, useEffect, useState } from "react"
 
 import IconPlus from '~icons/lucide/plus';
 import IconRefresh from '~icons/flowbite/refresh-outline';
@@ -49,6 +49,7 @@ import { ConfigurationFormValues, functionType } from '../model/types';
 import { getColumns } from '@/features/datatable';
 import { DistributionList } from '@/widgets/distribution/list';
 import { schema } from '../model/form-schema';
+import { motion } from 'framer-motion';
 
 const functionsList = [
     { label: 'Значение', value: 'VAL',  _value: 'value' },
@@ -57,7 +58,7 @@ const functionsList = [
   ];
 
 
-export const Constructor: React.FC = observer(() => {
+export const Constructor: React.FunctionComponent = memo(observer(() => {
     const [activeTab, setActiveTab] = useState<string>('configuration');
     const tableStore = TableModel.tableStore;
     const { toast } = useToast();
@@ -152,7 +153,7 @@ export const Constructor: React.FC = observer(() => {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormControl>
-                                                    <Select disabled={columns.length === 0 || tableStore.loading.filter} defaultValue={field.value || ''} onValueChange={field.onChange}>
+                                                    <Select disabled={columns?.length === 0 || tableStore.loading.filter} defaultValue={field.value || ''} onValueChange={field.onChange}>
                                                         <SelectTrigger className="bg-secondary">
                                                             <SelectValue placeholder="Выбрать" />
                                                         </SelectTrigger>
@@ -177,7 +178,10 @@ export const Constructor: React.FC = observer(() => {
                                     <div
                                         className="configurations__block">
                                         {form.getValues().configurations && form.getValues().configurations[configIndex].operations?.map((operation, funcIndex) => (
-                                            <div key={funcIndex} className="relative w-full max-w-sm items-center">
+                                            <div
+                                                key={funcIndex} 
+                                                className="relative w-full max-w-sm items-center"
+                                            >
                                                 <Controller
                                                     control={form.control}
                                                     name={`configurations.${configIndex}.operations.${funcIndex}.${Object.keys(operation)[0] as functionType}`}
@@ -257,4 +261,4 @@ export const Constructor: React.FC = observer(() => {
         </form>
     </Form>
     )
-})
+}))
