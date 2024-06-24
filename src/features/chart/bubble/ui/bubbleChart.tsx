@@ -3,9 +3,12 @@ import React from 'react';
 import ReactApexChart from 'react-apexcharts';
 
 interface DataPoint {
-  x: number;
-  y: number;
-  r: number;
+  name: string;
+  data: {
+    x: number;
+    y: number;
+    z: number;
+  };
 }
 
 interface BubbleChartProps {
@@ -25,9 +28,9 @@ class BubbleChart extends React.Component<BubbleChartProps, BubbleChartState> {
     super(props);
 
     const formattedData = props.data.map((point) => ({
-      x: point.x,
-      y: Math.round(point.y),
-      z: point.r,
+      x: point.data.x,
+      y: Math.round(point.data.y),
+      z: point.data.z,
     }));
 
     this.state = {
@@ -64,10 +67,10 @@ class BubbleChart extends React.Component<BubbleChartProps, BubbleChartState> {
         },
         tooltip: {
           y: {
-            formatter: (val: number) => `${val.toFixed(2)} руб.`,
+            formatter: (val: number) => `${val} руб.`,
           },
           z: {
-            formatter: (val: number) => `${val.toFixed(2)} руб.`,
+            formatter: (val: number) => `${val} руб.`,
             title: 'Потраченная сумма',
           },
         },

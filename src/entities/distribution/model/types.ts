@@ -29,13 +29,21 @@ export class DistributionDto {
             labels: string[];
         };
         dots_graph: {
-            x: number;
-            y: number;
-            r: number;
+            data: {
+                x: number;
+                y: number;
+                z: number;
+            }
+            name: string
         }[];
         bars_graph: {
-            series: number[];
-            categories: string[]
+            data: [
+                {
+                    cluster_hint: string[];
+                    x: number;
+                    y: number;
+                }
+            ]
         };
     }
 }

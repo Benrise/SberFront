@@ -26,7 +26,7 @@ import { useToast } from "@/shared/ui/use-toast"
 
 import { PieChart } from '@/features/chart/pie'
 import { BubbleChart } from '@/features/chart/bubble' 
-import { BarChart } from "@/features/chart/bar"
+import { TreemapChart } from "@/features/chart/treemap"
 
 
 import { motion } from "framer-motion"
@@ -61,7 +61,7 @@ export const DistributionPage = observer(() => {
 
     const fetchDistributions = async () => {
         await tableStore.history();
-        const lastDistributionId = tableStore.distributions[tableStore.distributions?.length - 1].config_id;
+        const lastDistributionId = tableStore.distributions[0].config_id;
         if (lastDistributionId) {
             try {
                 await distributionStore.get(lastDistributionId);
@@ -74,12 +74,6 @@ export const DistributionPage = observer(() => {
                   });
                 setStatus(DistributionStatusEnum.FAILURE);
             }
-        }
-        if (lastDistributionId) {
-            toast({
-                title: 'Будет отображено последнее расчитанное распределение',
-                description: 'Список распределений для выбора находится в разделе "История" на странице предобработки данных',
-            });
         }
     }
 
@@ -105,6 +99,12 @@ export const DistributionPage = observer(() => {
 
     useEffect(() => {
         fetchItem(id);
+        if (!id) {
+            toast({
+                title: 'Будет отображено последнее расчитанное распределение',
+                description: 'Список распределений для выбора находится в разделе "История" на странице предобработки данных',
+            });
+        }
     }, [distributionStore]);
 
     useEffect(() => {
@@ -137,14 +137,14 @@ export const DistributionPage = observer(() => {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem asChild>
                             {item?.data?.distributed_bills && (
-                                <a key={2} href={item.data.distributed_bills}>
+                                <a target='_blank' key={2} href={item.data.distributed_bills}>
                                     <Button size={'icon'} className="w-full" variant="ghost">.XLS</Button>
                                 </a>
                             )}
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             {item?.data?.export_distributed_bills_csv && (
-                                <a key={3} href={item.data.export_distributed_bills_csv}>
+                                <a target='_blank' key={3} href={item.data.export_distributed_bills_csv}>
                                     <Button size={'icon'} className="w-full" variant="ghost">.CSV</Button>
                                 </a>
                             )}
@@ -166,14 +166,14 @@ export const DistributionPage = observer(() => {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                         {item?.data?.distributed_bills_predict && (
-                            <a key={2} href={item.data.distributed_bills_predict}>
+                            <a target='_blank' key={2} href={item.data.distributed_bills_predict}>
                                 <Button size={'icon'} className="w-full" variant="ghost">.XLS</Button>
                             </a>
                         )}
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                         {item?.data?.distributed_bills_predict_csv && (
-                            <a key={3} href={item.data.distributed_bills_predict_csv}>
+                            <a target='_blank' key={3} href={item.data.distributed_bills_predict_csv}>
                                 <Button size={'icon'} className="w-full" variant="ghost">.CSV</Button>
                             </a>
                         )}
@@ -197,7 +197,7 @@ export const DistributionPage = observer(() => {
                 </div>
                 {item?.data?.bars_graph && 
                   <div style={{ height: '50%' }}>
-                      <BarChart data={item?.data?.bars_graph} />
+                      <TreemapChart data={item?.data?.bars_graph.data} />
                   </div>
                 }
                 <DataTable dfName={DataframeNamesEnum.DISTRIBUTION} toolbar={toolbarConfig}/>
@@ -218,7 +218,17 @@ export const DistributionPage = observer(() => {
     if (item?.status === DistributionStatusEnum.FAILURE) {
         return (
             <div className="distribution__fallback">
-                <img src='/images/png/rejected.png'/>
+                <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{
+                        type: "spring",
+                        stiffness: 260,
+                        damping: 20
+                    }}
+                >
+                    <img src='/images/png/rejected.png'/>
+                </motion.div>
                 <div>
                     Ошибка при обработке {id ? 'распределения' : 'последнего расчитанного распределения'} {distributionStore.item?.config_id}
                 </div>
@@ -232,7 +242,17 @@ export const DistributionPage = observer(() => {
     if (item?.status === DistributionStatusEnum.PENDING || typeof(item?.data) === 'number') {
         return (
             <div className="distribution__fallback">
-                <img src='/images/png/fog.png'/>
+                <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{
+                        type: "spring",
+                        stiffness: 260,
+                        damping: 20
+                    }}
+                >
+                    <img src='/images/png/fog.png'/>
+                </motion.div>
                 <div>Распределение {distributionStore.item?.config_id} в обработке...</div>
                 <div className="flex gap-2">
                     <Button onClick={() => fetchItem(id)}>Проверить статус</Button>
