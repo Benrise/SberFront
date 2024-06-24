@@ -51,8 +51,10 @@ export const DistributionPage = observer(() => {
     const dataValue = parseInt(item?.data as any);
 
     const fetchTable = async () => {
-        await tableStore.getTable(DataframeNamesEnum.DISTRIBUTION);
-    }
+        if (!tableStore.loading.item && !tableStore.tableData.data.length) {
+          await tableStore.getTable(DataframeNamesEnum.DISTRIBUTION);
+        }
+    };
 
     const toolbarConfig = {
         title: 'Итоговое распределение',
@@ -70,6 +72,9 @@ export const DistributionPage = observer(() => {
         if (lastDistributionId) {
             try {
                 await distributionStore.get(lastDistributionId);
+                if (!id) {
+                    navigate(`/distribution/${lastDistributionId}`);
+                }
                 toast({
                     title: 'Будет отображено последнее расчитанное распределение',
                     description: 'Список распределений для выбора находится в разделе "История" на странице предобработки данных',
@@ -97,11 +102,10 @@ export const DistributionPage = observer(() => {
                     variant: 'destructive',
                     title: 'Непредвиденная ошибка',
                     description: 'Не удалось загрузить распределение',
-                  });
+                });
                 setStatus(DistributionStatusEnum.FAILURE);
             }
-        }
-        else {
+        } else {
             fetchDistributions();
         }
     }
@@ -113,6 +117,16 @@ export const DistributionPage = observer(() => {
     useEffect(() => {
         fetchTable();
     }, []);
+
+    useEffect(() => {
+        if (item?.status !== DistributionStatusEnum.SUCCESS && item?.status !== DistributionStatusEnum.FAILURE) {
+            const intervalId = setInterval(() => {
+                if (distributionStore.loading.item || tableStore.loading.item) return;
+                fetchItem(id);
+            }, 5000);
+            return () => clearInterval(intervalId);
+        }
+    }, [id, dataValue, item?.status]);
 
     const contentProps: ContentProps = {
         mainPanel: {

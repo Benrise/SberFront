@@ -40,6 +40,7 @@ export const PreprocessingPage = observer(() => {
                     title: `Операция успешно зарегистрирована`,
                     description: `Статусы обработки операций отображается в истории`,
                 });
+                await tableStore.history();
             }
         }
         catch (e) {
