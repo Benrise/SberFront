@@ -52,7 +52,7 @@ class BubbleChart extends React.Component<BubbleChartProps, BubbleChartState> {
           opacity: 0.8,
         },
         title: {
-          text: 'График распределения затрат',
+          text: 'Сумма затрат по услугам',
         },
         plotOptions: {
           bubble: {
@@ -63,7 +63,7 @@ class BubbleChart extends React.Component<BubbleChartProps, BubbleChartState> {
           tickAmount: 10,
           type: 'numeric',
           title: {
-            text: 'Частота',
+            text: 'Частота оплаты услуги',
           },
         },
         yaxis: {
