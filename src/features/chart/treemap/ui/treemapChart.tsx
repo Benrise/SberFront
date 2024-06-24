@@ -4,7 +4,7 @@ import ReactApexChart from 'react-apexcharts';
 
 interface TreemapChartProps {
   data: Array<{
-    x: number;
+    x: string;
     y: number;
     cluster_hint: string[];
   }>;
@@ -13,7 +13,7 @@ interface TreemapChartProps {
 interface TreemapChartState {
   series: Array<{
     data: Array<{
-      x: string[];
+      x: string;
       y: number;
       hints: string[];
     }>;
@@ -26,7 +26,7 @@ class TreemapChart extends React.PureComponent<TreemapChartProps, TreemapChartSt
     super(props);
 
     const transformedData = props.data.map(item => ({
-      x: item.cluster_hint,
+      x: item.x.toString(),
       y: item.y,
       hints: item.cluster_hint,
     }));

@@ -40,7 +40,7 @@ export class DistributionDto {
             data: [
                 {
                     cluster_hint: string[];
-                    x: number;
+                    x: string;
                     y: number;
                 }
             ]
