@@ -34,6 +34,7 @@ import { motion } from "framer-motion"
 import './styles.scss'
 import { DataTable } from "@/features/datatable"
 import { DataframeNamesEnum } from "@/entities/table/model"
+import { RadialChart } from "@/features/chart/radial"
 
 
 export const DistributionPage = observer(() => {
@@ -44,6 +45,10 @@ export const DistributionPage = observer(() => {
     const tableStore = TableModel.tableStore;
     const item = distributionStore.item;
     const { toast } = useToast();
+
+    const isPendingOrSuccess = item?.status === DistributionStatusEnum.PENDING || item?.status === DistributionStatusEnum.SUCCESS;
+    const isDataNumber = typeof item?.data === 'number';
+    const dataValue = parseInt(item?.data as any);
 
     const fetchTable = async () => {
         await tableStore.getTable(DataframeNamesEnum.DISTRIBUTION);
@@ -61,10 +66,14 @@ export const DistributionPage = observer(() => {
 
     const fetchDistributions = async () => {
         await tableStore.history();
-        const lastDistributionId = tableStore.distributions[0].config_id;
+        const lastDistributionId = tableStore.distributions[0]?.config_id;
         if (lastDistributionId) {
             try {
                 await distributionStore.get(lastDistributionId);
+                toast({
+                    title: 'Будет отображено последнее расчитанное распределение',
+                    description: 'Список распределений для выбора находится в разделе "История" на странице предобработки данных',
+                });
             }
             catch {
                 toast({
@@ -99,12 +108,6 @@ export const DistributionPage = observer(() => {
 
     useEffect(() => {
         fetchItem(id);
-        if (!id) {
-            toast({
-                title: 'Будет отображено последнее расчитанное распределение',
-                description: 'Список распределений для выбора находится в разделе "История" на странице предобработки данных',
-            });
-        }
     }, [distributionStore]);
 
     useEffect(() => {
@@ -200,7 +203,9 @@ export const DistributionPage = observer(() => {
                       <TreemapChart data={item?.data?.bars_graph.data} />
                   </div>
                 }
-                <DataTable dfName={DataframeNamesEnum.DISTRIBUTION} toolbar={toolbarConfig}/>
+                {tableStore.tableData.data.length> 0 && (
+                    <DataTable dfName={DataframeNamesEnum.DISTRIBUTION} toolbar={toolbarConfig}/>     
+                )}
               </div>
             )
         }
@@ -239,26 +244,30 @@ export const DistributionPage = observer(() => {
         )
     }
 
-    if (item?.status === DistributionStatusEnum.PENDING || typeof(item?.data) === 'number') {
+    if ((isPendingOrSuccess && isDataNumber && dataValue === 0) || (isDataNumber && dataValue !== 0)) {
         return (
             <div className="distribution__fallback">
-                <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{
-                        type: "spring",
-                        stiffness: 260,
-                        damping: 20
-                    }}
-                >
-                    <img src='/images/png/fog.png'/>
-                </motion.div>
+                {isPendingOrSuccess && dataValue === 0 ? (
+                    <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{
+                            type: "spring",
+                            stiffness: 260,
+                            damping: 20
+                        }}
+                    >
+                        <img src='/images/png/fog.png'/>
+                    </motion.div>
+                ) : (
+                    <RadialChart value={Math.round(dataValue)} label={'Прогресс'}/>
+                )}
                 <div>Распределение {distributionStore.item?.config_id} в обработке...</div>
                 <div className="flex gap-2">
                     <Button onClick={() => fetchItem(id)}>Проверить статус</Button>
                 </div>
             </div>
-        )
+        );
     }
 
     if (!item) {

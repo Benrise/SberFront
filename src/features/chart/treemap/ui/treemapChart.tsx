@@ -42,7 +42,6 @@ class TreemapChart extends React.PureComponent<TreemapChartProps, TreemapChartSt
           text: 'Кластеризация по среднему числу услуг',
         },
         chart: {
-          height: 350,
           type: 'treemap',
         },
         plotOptions: {
@@ -78,7 +77,7 @@ class TreemapChart extends React.PureComponent<TreemapChartProps, TreemapChartSt
             options={this.state.options}
             series={this.state.series}
             type="treemap"
-            height={350}
+            height={480}
           />
         </div>
       </div>

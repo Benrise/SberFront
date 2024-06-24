@@ -44,6 +44,7 @@ class BubbleChart extends React.Component<BubbleChartProps, BubbleChartState> {
         chart: {
           type: 'bubble',
         },
+        colors: ['#0AA752'],
         dataLabels: {
           enabled: false,
         },
