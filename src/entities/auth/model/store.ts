@@ -37,6 +37,7 @@ export class AuthStore {
       });
     } catch (error) {
       console.error(error);
+      throw error
     } finally {
       this.setLoading(false);
     }
@@ -82,6 +83,7 @@ export class AuthStore {
       callback?.();
     } catch (error) {
       console.error(error);
+      throw error
     } finally {
       this.setLoading(false);
     }

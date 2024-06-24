@@ -22,6 +22,7 @@ import { loginSchema, registerSchema } from '../model';
 import { AUTH_SBER_URL } from '@/app/config';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { TableModel } from '@/entities/table';
+import { useToast } from '@/shared/ui/use-toast';
 
 export const AuthForm: React.FC = observer(() => {
     const authStore = AuthModel.authStore;
@@ -32,6 +33,8 @@ export const AuthForm: React.FC = observer(() => {
 
     const navigate = useNavigate();
     const location = useLocation();
+
+    const { toast } = useToast();
 
     const from = location.state?.from?.pathname || '/';
 
@@ -46,17 +49,33 @@ export const AuthForm: React.FC = observer(() => {
     });
 
     const handleLoginSubmit: SubmitHandler<AuthModel.AuthCredentialsDto> = async (values) => {
-        await authStore.login({ username: values.username, password: values.password });
-        if (authStore.isAuthorized) {
-            navigate(from, { replace: true })
-            tableStore.preloadTable();
+        try {
+            await authStore.login({ username: values.username, password: values.password });
+            if (authStore.isAuthorized) {
+                navigate(from, { replace: true });
+                tableStore.preloadTable();
+            }
+        } catch (error: any) {
+            if (error.response && error.response.status === 400) {
+                toast({ variant: 'destructive', title: 'Ошибка', description: error.response.data.message });
+            } else {
+                toast({ variant: 'destructive', title: 'Ошибка', description: 'Произошла ошибка при входе. Повторите попытку позже.' });
+            }
         }
     };
 
     const handleRegisterSubmit: SubmitHandler<AuthModel.AuthCredentialsDto> = async (values) => {
-        await authStore.register({ username: values.username, password: values.password });
-        if (authStore.isAuthorized) {
-            navigate(from, { replace: true })
+        try {
+            await authStore.register({ username: values.username, password: values.password });
+            if (authStore.isAuthorized) {
+                navigate(from, { replace: true });
+            }
+        } catch (error: any) {
+            if (error.response && error.response.status === 400) {
+                toast({ variant: 'destructive', title: 'Ошибка', description: error.response.data.message });
+            } else {
+                toast({ variant: 'destructive', title: 'Ошибка', description: 'Произошла ошибка при регистрации. Повторите попытку позже.' });
+            }
         }
     };
 
