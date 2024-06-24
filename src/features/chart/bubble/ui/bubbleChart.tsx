@@ -30,7 +30,7 @@ class BubbleChart extends React.Component<BubbleChartProps, BubbleChartState> {
     const formattedData = props.data.map((point) => ({
       x: point.data.x,
       y: Math.round(point.data.y),
-      z: point.data.z,
+      z: point.data.z
     }));
 
     this.state = {
@@ -53,6 +53,11 @@ class BubbleChart extends React.Component<BubbleChartProps, BubbleChartState> {
         },
         title: {
           text: 'График распределения затрат',
+        },
+        plotOptions: {
+          bubble: {
+            minBubbleRadius: 5,
+          },
         },
         xaxis: {
           tickAmount: 10,
