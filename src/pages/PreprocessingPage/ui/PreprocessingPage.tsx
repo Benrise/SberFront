@@ -5,6 +5,12 @@ import { DataTable } from "@/features/datatable"
 import { TableModel } from "@/entities/table"
 import { DataframeNamesEnum } from "@/entities/table/model"
 import { Button } from "@/shared/ui/button"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+  } from "@/shared/ui/tooltip"
 import { Constructor } from "@/widgets/constructor"
 
 import IconRefresh from '~icons/flowbite/refresh-outline';
@@ -60,7 +66,19 @@ export const PreprocessingPage = observer(() => {
             body: <DataTable dfName={DataframeNamesEnum.BILLS} editable/>
         },
         additionalPanel: {
-            extraAction: <Button loading={distributionStore.loading.item} onClick={() => startDistribution()}>Начать распределение</Button>,
+            extraAction: 
+            (
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button loading={distributionStore.loading.item} onClick={() => startDistribution()}>Начать распределение</Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            Расчет распределения занимает в среднем ~10 минут
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+            ),
             body: <Constructor/>
         },
         reversed: true

@@ -30,7 +30,7 @@ export const DistributionBadge: React.FC<DistributionBadgeProps> = ({ item }) =>
             if (item?.distribution_info) {
                 return `(${Math.round(parseFloat(item?.distribution_info))}%)`
             }
-            return '(ожидание)'
+            return '(подготовка, 30 секунд)'
         }
         return ''
     }

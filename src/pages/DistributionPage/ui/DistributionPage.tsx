@@ -118,7 +118,7 @@ export const DistributionPage = observer(() => {
         mainPanel: {
             text: {
                 title: id ? 'Распределение' : 'Последнее расчитанное распределение ' + (item?.config_id),
-                description: item?.create_at ?  "От " + format(item?.create_at) : ''
+                description: item?.create_at ?  "От " + format(item?.create_at, 'DD.MM.YYYY HH:mm') : ''
             },
             toolbarButtons: [
                 <Button key={1} disabled={tableStore.loading.item} onClick={() => fetchItem(id)} variant={'secondary'}>
