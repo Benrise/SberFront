@@ -26,7 +26,7 @@ class TreemapChart extends React.PureComponent<TreemapChartProps, TreemapChartSt
     super(props);
 
     const transformedData = props.data.map(item => ({
-      x: item.x.toString(),
+      x: (item.x + 1).toString(),
       y: item.y,
       hints: item.cluster_hint,
     }));
